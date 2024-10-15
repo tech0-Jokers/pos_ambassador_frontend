@@ -36,6 +36,11 @@ export default function SnackRegistrationApp() {
     setBarcodeResult(""); // リセット
   };
 
+  // アイテム削除関数
+  const removeItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
+
   const handleScanResult = (scannedCode: string) => {
     setBarcodeResult(scannedCode); // 読み込み結果に表示
     setShowScanner(false); // スキャナを非表示にする
@@ -165,9 +170,20 @@ export default function SnackRegistrationApp() {
                     <p className="text-lg font-semibold mb-2">リスト:</p>
                     {items.length > 0 ? (
                       items.map((item, index) => (
-                        <p key={index} className="text-xl">
-                          {item.name}: {item.quantity}個
-                        </p>
+                        <div
+                          key={index}
+                          className="flex justify-between items-center mb-2"
+                        >
+                          <p className="text-xl">
+                            {item.name}: {item.quantity}個
+                          </p>
+                          <Button
+                            variant="destructive"
+                            onClick={() => removeItem(index)}
+                          >
+                            削除
+                          </Button>
+                        </div>
                       ))
                     ) : (
                       <p className="text-gray-500">まだ追加されていません。</p>
