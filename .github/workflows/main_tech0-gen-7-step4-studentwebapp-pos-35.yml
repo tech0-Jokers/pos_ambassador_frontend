@@ -30,9 +30,9 @@ jobs:
       - name: Copy artifact for deployment job
         run: |
           mkdir deploy
-          cp -r ./.next/standalone/. ./deploy
-          cp -r ./public ./deploy
-          cp -r ./.next/static/. ./deploy/.next/static
+          if [ -d ".next/standalone/" ]; then cp -r ./.next/standalone/. ./deploy; fi
+          if [ -d "./public" ]; then cp -r ./public ./deploy; fi
+          if [ -d ".next/static/" ]; then cp -r ./.next/static/. ./deploy/.next/static; fi
 
       - name: Zip artifact for deployment
         run: zip release.zip ./deploy -r
