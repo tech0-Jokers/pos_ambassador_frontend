@@ -238,7 +238,7 @@ export default function SnackRegistrationApp() {
                     onClick={() => alert("登録完了！")}
                     className="text-xl px-6 py-3"
                   >
-                    登録
+                    登録！
                   </Button>
                 </CardFooter>
               </>
