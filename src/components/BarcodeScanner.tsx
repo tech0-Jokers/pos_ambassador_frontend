@@ -35,7 +35,7 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
   const handleScan = async (barcode: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/get_product_name?barcode=${barcode}`
+        `${process.env.NEXT_PUBLIC_API_URL}/get_product_name?barcode=${barcode}`
       );
       if (!response.ok) {
         throw new Error("商品が見つかりません");
