@@ -31,8 +31,10 @@ export default function BarcodeScanner() {
   // バーコードをスキャンした後の商品名を取得する関数
   const handleScan = async (barcode: string) => {
     try {
-      console.log("API URL:", process.env.REACT_APP_API_URL); 
-      const response = await fetch(`http://localhost:8000/get_product_name?barcode=${barcode}`);
+      console.log("API URL:", process.env.REACT_APP_API_URL);
+      const response = await fetch(
+        `http://localhost:8000/get_product_name?barcode=${barcode}`
+      );
       if (!response.ok) {
         throw new Error("商品が見つかりません");
       }
@@ -40,8 +42,13 @@ export default function BarcodeScanner() {
       setProductName(data.product_name); // 商品名を状態に設定
       setError(null); // エラーをリセット
     } catch (error) {
-      console.error("エラー:", error);
-      setError(error.message); // エラーメッセージを状態に設定
+      if (error instanceof Error) {
+        console.error("エラー:", error);
+        setError(error.message); // エラーメッセージを状態に設定
+      } else {
+        console.error("不明なエラー:", error);
+        setError("不明なエラーが発生しました"); // 不明なエラー
+      }
       setProductName(null); // 商品名をリセット
     }
   };
