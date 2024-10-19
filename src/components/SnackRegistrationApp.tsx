@@ -41,8 +41,9 @@ export default function SnackRegistrationApp() {
     setItems(items.filter((_, i) => i !== index));
   };
 
-  const handleScanResult = (scannedCode: string) => {
-    setBarcodeResult(scannedCode); // 読み込み結果に表示
+  // スキャン結果（商品名）を反映させる
+  const handleScanResult = (productName: string) => {
+    setItemName(productName); // 商品名を品名入力欄に反映
     setShowScanner(false); // スキャナを非表示にする
   };
 
@@ -137,13 +138,6 @@ export default function SnackRegistrationApp() {
                       <div className="mt-4">
                         <BarcodeScanner onScan={handleScanResult} />
                       </div>
-
-                      <Input
-                        value={barcodeResult}
-                        readOnly
-                        placeholder="読み込み結果がここに表示されます"
-                        className="text-xl h-16 px-6 w-full"
-                      />
                     </>
                   )}
 

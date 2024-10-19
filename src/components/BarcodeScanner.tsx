@@ -4,12 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
 interface BarcodeScannerProps {
-  onScan: (scannedCode: string) => void; // スキャン結果を受け取るプロパティ
+  onScan: (productName: string) => void; // スキャン結果（商品名）を受け取るプロパティ
 }
 
 export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null); // カメラ映像の表示領域
-  const [productName, setProductName] = useState<string | null>(null); // 商品名の状態
   const [error, setError] = useState<string | null>(null); // エラーの状態
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
       .decodeFromVideoDevice(null, videoRef.current!, (result, err) => {
         if (result) {
           console.log("スキャン結果:", result.getText());
-          onScan(result.getText()); // スキャン結果を親コンポーネントに渡す
+          handleScan(result.getText()); // バーコード番号で商品名を取得
           codeReader.reset(); // スキャンを停止
         } else if (err && !(err instanceof NotFoundException)) {
           console.error("スキャンエラー:", err);
@@ -30,12 +29,11 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
     return () => {
       codeReader.reset(); // コンポーネントがアンマウントされるときにリセット
     };
-  }, [onScan]);
+  }, []);
 
   // バーコードをスキャンした後の商品名を取得する関数
   const handleScan = async (barcode: string) => {
     try {
-      console.log("API URL:", process.env.REACT_APP_API_URL);
       const response = await fetch(
         `http://localhost:8000/get_product_name?barcode=${barcode}`
       );
@@ -43,7 +41,7 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
         throw new Error("商品が見つかりません");
       }
       const data = await response.json();
-      setProductName(data.product_name); // 商品名を状態に設定
+      onScan(data.product_name); // 商品名を親コンポーネントに渡す
       setError(null); // エラーをリセット
     } catch (error) {
       if (error instanceof Error) {
@@ -53,14 +51,12 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
         console.error("不明なエラー:", error);
         setError("不明なエラーが発生しました"); // 不明なエラー
       }
-      setProductName(null); // 商品名をリセット
     }
   };
 
   return (
     <div>
       <video ref={videoRef} style={{ width: "100%", height: "300px" }} />
-      {productName && <div>商品名: {productName}</div>}
       {error && <div style={{ color: "red" }}>エラー: {error}</div>}
     </div>
   );
