@@ -3,7 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
-export default function BarcodeScanner() {
+interface BarcodeScannerProps {
+  onScan: (scannedCode: string) => void; // スキャン結果を受け取るプロパティ
+}
+
+export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null); // カメラ映像の表示領域
   const [productName, setProductName] = useState<string | null>(null); // 商品名の状態
   const [error, setError] = useState<string | null>(null); // エラーの状態
@@ -15,7 +19,7 @@ export default function BarcodeScanner() {
       .decodeFromVideoDevice(null, videoRef.current!, (result, err) => {
         if (result) {
           console.log("スキャン結果:", result.getText());
-          handleScan(result.getText()); // スキャン結果を処理
+          onScan(result.getText()); // スキャン結果を親コンポーネントに渡す
           codeReader.reset(); // スキャンを停止
         } else if (err && !(err instanceof NotFoundException)) {
           console.error("スキャンエラー:", err);
@@ -26,7 +30,7 @@ export default function BarcodeScanner() {
     return () => {
       codeReader.reset(); // コンポーネントがアンマウントされるときにリセット
     };
-  }, []);
+  }, [onScan]);
 
   // バーコードをスキャンした後の商品名を取得する関数
   const handleScan = async (barcode: string) => {
