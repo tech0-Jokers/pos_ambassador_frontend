@@ -47,6 +47,36 @@ export default function SnackRegistrationApp() {
     setShowScanner(false); // スキャナを非表示にする
   };
 
+  // データをFastAPIに送信する関数
+  const handleRegister = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/recieving_register`, // 環境変数を使ったURL
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            price: price,
+            items: items,
+            entryDate: new Date().toISOString(), // 入庫日として現在の日付を送信
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("登録完了！");
+      } else {
+        const errorData = await response.json();
+        alert(`登録失敗: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+      alert("エラーが発生しました");
+    }
+  };
+
   const renderStep = () => (
     <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg">
       {(() => {
@@ -229,7 +259,7 @@ export default function SnackRegistrationApp() {
                     戻る
                   </Button>
                   <Button
-                    onClick={() => alert("登録完了！")}
+                    onClick={handleRegister} // 登録処理
                     className="text-xl px-6 py-3"
                   >
                     登録！
