@@ -57,7 +57,7 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
   return (
     <div>
       <video ref={videoRef} style={{ width: "100%", height: "300px" }} />
-      {error && <div style={{ color: "red" }}>エラー: {error}</div>}
+      {error && <div style={{ color: "red" }}>エラーです: {error}</div>}
     </div>
   );
 }
