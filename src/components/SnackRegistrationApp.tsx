@@ -73,7 +73,7 @@ export default function SnackRegistrationApp() {
       }
     } catch (error) {
       console.error("エラーが発生しました:", error);
-      alert("エラーが発生しました");
+      alert("エラー発生しました");
     }
   };
 
