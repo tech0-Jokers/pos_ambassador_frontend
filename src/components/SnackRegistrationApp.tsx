@@ -14,10 +14,10 @@ import BarcodeScanner from "@/components/BarcodeScanner"; // スキャナをイ�
 
 export default function SnackRegistrationApp() {
   const [step, setStep] = useState(0);
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState<number>(0); // priceは数値として扱う
   const [itemName, setItemName] = useState(""); // 品名手動入力用
   const [barcodeResult, setBarcodeResult] = useState(""); // 読み込み結果用
-  const [quantity, setQuantity] = useState("");
+  const [quantity, setQuantity] = useState<number>(0); // quantityも数値として扱う
   const [items, setItems] = useState<Array<{ name: string; quantity: number }>>(
     []
   );
@@ -29,10 +29,10 @@ export default function SnackRegistrationApp() {
   const addItem = () => {
     setItems([
       ...items,
-      { name: itemName || barcodeResult, quantity: parseInt(quantity) },
+      { name: itemName || barcodeResult, quantity: quantity },
     ]);
     setItemName("");
-    setQuantity("");
+    setQuantity(0); // quantityをリセット
     setBarcodeResult(""); // リセット
   };
 
@@ -58,7 +58,7 @@ export default function SnackRegistrationApp() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            price: price,
+            price: price, // priceは数値型で送信
             items: items,
             entryDate: new Date().toISOString(), // 入庫日として現在の日付を送信
           }),
@@ -124,7 +124,7 @@ export default function SnackRegistrationApp() {
                   <Input
                     type="number"
                     value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    onChange={(e) => setPrice(parseFloat(e.target.value))} // 数値に変換してセット
                     placeholder="金額"
                     className="text-xl h-16 px-6 w-full"
                   />
@@ -180,8 +180,8 @@ export default function SnackRegistrationApp() {
 
                   <Input
                     type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    value={quantity.toString()} // 数値型のまま扱う
+                    onChange={(e) => setQuantity(parseInt(e.target.value))}
                     placeholder="個数を手動で入力してください"
                     className="text-xl h-16 px-6 w-full"
                   />
