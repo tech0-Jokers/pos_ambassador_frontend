@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+# 環境変数の設定: GitHub Secretsに保存された値を使用
+env:
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }} # APIのURL
+
 jobs:
   build:
     runs-on: ubuntu-latest
