@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["next-auth"], // ここを追加
     "plugins": [
       {
         "name": "next"

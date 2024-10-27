@@ -1,18 +1,19 @@
-import NextAuth, { AuthOptions, Session } from "next-auth";
+import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
-export const authOptions: AuthOptions = {
+const authOptions = {
   providers: [
     GithubProvider({
-      clientId: process.env.AUTH_GITHUB_ID || "", // 修正: AUTH_GITHUB_IDに変更
-      clientSecret: process.env.AUTH_GITHUB_SECRET || "", // 修正: AUTH_GITHUB_SECRETに変更
+      clientId: process.env.AUTH_GITHUB_ID || "",
+      clientSecret: process.env.AUTH_GITHUB_SECRET || "",
     }),
   ],
   callbacks: {
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        session.user.id = token.sub || ""; // `sub`が`undefined`の場合は空文字列を使用
+        session.user.id = token.sub || "";
       }
       return session;
     },
