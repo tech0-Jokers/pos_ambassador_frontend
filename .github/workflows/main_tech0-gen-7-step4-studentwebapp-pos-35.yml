@@ -12,6 +12,10 @@ on:
 # 環境変数の設定: GitHub Secretsに保存された値を使用
 env:
   NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }} # APIのURL
+  NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }} # デプロイ先のURL
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }} # NextAuthのシークレット
+  AUTH_GITHUB_ID: ${{ secrets.AUTH_GITHUB_ID }} # GitHubクライアントID
+  AUTH_GITHUB_SECRET: ${{ secrets.AUTH_GITHUB_SECRET }} # GitHubクライアントシークレット
 
 jobs:
   build:
