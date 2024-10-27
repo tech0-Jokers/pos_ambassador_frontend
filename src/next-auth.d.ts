@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+// `import NextAuth from "next-auth";` 行を削除
 
 declare module "next-auth" {
   interface Session {

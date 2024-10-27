@@ -1,6 +1,6 @@
 "use client"; // クライアントサイドでの実行を指定
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
 interface BarcodeScannerProps {
@@ -10,6 +10,32 @@ interface BarcodeScannerProps {
 export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null); // カメラ映像の表示領域
   const [error, setError] = useState<string | null>(null); // エラーの状態
+
+  // バーコードをスキャンした後の商品名を取得する関数を useCallback でメモ化
+  const handleScan = useCallback(
+    async (barcode: string) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/get_product_name?barcode=${barcode}`
+        );
+        if (!response.ok) {
+          throw new Error("商品が見つかりません");
+        }
+        const data = await response.json();
+        onScan(data.product_name); // 商品名を親コンポーネントに渡す
+        setError(null); // エラーをリセット
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("エラー:", error);
+          setError(error.message); // エラーメッセージを状態に設定
+        } else {
+          console.error("不明なエラー:", error);
+          setError("不明なエラーが発生しました"); // 不明なエラー
+        }
+      }
+    },
+    [onScan] // `onScan` を依存配列に追加
+  );
 
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader(); // ZXingのインスタンス作成
@@ -29,30 +55,7 @@ export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
     return () => {
       codeReader.reset(); // コンポーネントがアンマウントされるときにリセット
     };
-  }, []);
-
-  // バーコードをスキャンした後の商品名を取得する関数
-  const handleScan = async (barcode: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/get_product_name?barcode=${barcode}`
-      );
-      if (!response.ok) {
-        throw new Error("商品が見つかりません");
-      }
-      const data = await response.json();
-      onScan(data.product_name); // 商品名を親コンポーネントに渡す
-      setError(null); // エラーをリセット
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("エラー:", error);
-        setError(error.message); // エラーメッセージを状態に設定
-      } else {
-        console.error("不明なエラー:", error);
-        setError("不明なエラーが発生しました"); // 不明なエラー
-      }
-    }
-  };
+  }, [handleScan]); // `handleScan` を依存配列に追加
 
   return (
     <div>
