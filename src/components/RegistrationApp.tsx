@@ -70,7 +70,7 @@ export default function RegistrationApp() {
   };
 
   const renderMainView = () => (
-    <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg">
+    <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg transparent-container">
       <CardHeader>
         <CardTitle className="text-center text-3xl">
           やあ、アンバサダー！今回は何する？
@@ -110,7 +110,7 @@ export default function RegistrationApp() {
   );
 
   const renderSnackRegistration = () => (
-    <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg">
+    <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg transparent-container">
       {(() => {
         switch (step) {
           case 0:
