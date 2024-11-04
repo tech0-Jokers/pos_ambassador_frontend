@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import BarcodeScanner from "@/components/BarcodeScanner"; // スキャナをインポート
+import BarcodeScanner from "@/components/archive/BarcodeScanner"; // スキャナをインポート
 
 export default function SnackRegistrationApp() {
   const [step, setStep] = useState(0);
