@@ -168,18 +168,12 @@ export default function RegistrationApp() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button
-                      onClick={() => router.push("/registerFromHistory")}
-                      className="text-xl py-3 h-auto whitespace-normal text-center"
-                    >
-                      Meitex商品またはこれまでの履歴から登録
-                    </Button>
+                  <div className="grid grid-cols-1 gap-4">
                     <Button
                       onClick={() => router.push("/newSnackRegistration")}
                       className="text-xl py-3 h-auto whitespace-normal text-center"
                     >
-                      新しくお菓子を登録・選択
+                      お菓子を登録
                     </Button>
                   </div>
                   <div className="mt-4 p-4 border rounded-md">
