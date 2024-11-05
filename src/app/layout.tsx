@@ -2,7 +2,8 @@
 
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
-import "./globals.css"; // 背景スタイルを適用するために globals.css をインポート
+import "./globals.css";
+import { RegistrationProvider } from "@/context/RegistrationContext"; // RegistrationProviderをインポート
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-snack`}
       >
-        <SessionProvider>{children}</SessionProvider>
+        <RegistrationProvider>
+          {" "}
+          {/* アプリ全体をRegistrationProviderでラップ */}
+          <SessionProvider>{children}</SessionProvider>
+        </RegistrationProvider>
       </body>
     </html>
   );

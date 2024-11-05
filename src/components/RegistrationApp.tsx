@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,30 +11,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRegistration } from "@/context/RegistrationContext";
+
+// Snack型を定義
+type Snack = {
+  name: string;
+  quantity: number;
+};
 
 export default function RegistrationApp() {
+  const router = useRouter();
+  const { snacks, setSnacks, currentSnack, setCurrentSnack } =
+    useRegistration() as {
+      snacks: Snack[];
+      setSnacks: React.Dispatch<React.SetStateAction<Snack[]>>;
+      currentSnack: string;
+      setCurrentSnack: React.Dispatch<React.SetStateAction<string>>;
+    };
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
   const [price, setPrice] = useState<number>(0);
-  const [items, setItems] = useState<Array<{ name: string; quantity: number }>>(
-    []
-  );
-  const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState<number>(0);
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
   const addItem = () => {
-    if (itemName && quantity > 0) {
-      setItems([...items, { name: itemName, quantity: quantity }]);
-      setItemName("");
+    if (currentSnack && quantity > 0) {
+      setSnacks([...snacks, { name: currentSnack, quantity }]);
+      setCurrentSnack("");
       setQuantity(0);
     }
-  };
-
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
   };
 
   const handleRegister = async () => {
@@ -47,7 +55,7 @@ export default function RegistrationApp() {
           },
           body: JSON.stringify({
             price: price,
-            items: items,
+            items: snacks,
             entryDate: new Date().toISOString(),
           }),
         }
@@ -57,7 +65,7 @@ export default function RegistrationApp() {
         alert("登録完了！");
         setCurrentView("main");
         setStep(0);
-        setItems([]);
+        setSnacks([]);
         setPrice(0);
       } else {
         const errorData = await response.json();
@@ -80,7 +88,10 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => setCurrentView("snackRegistration")}
+          onClick={() => {
+            setCurrentView("snackRegistration");
+            setStep(0); // snackRegistrationに移行したときにstepを初期化
+          }}
         >
           お菓子入庫
         </Button>
@@ -159,17 +170,13 @@ export default function RegistrationApp() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <Button
-                      onClick={() =>
-                        alert("Meitex商品または履歴からの登録機能は準備中です")
-                      }
+                      onClick={() => router.push("/registerFromHistory")}
                       className="text-xl py-3 h-auto whitespace-normal text-center"
                     >
                       Meitex商品またはこれまでの履歴から登録
                     </Button>
                     <Button
-                      onClick={() =>
-                        alert("新しいお菓子の登録・選択機能は準備中です")
-                      }
+                      onClick={() => router.push("/newSnackRegistration")}
                       className="text-xl py-3 h-auto whitespace-normal text-center"
                     >
                       新しくお菓子を登録・選択
@@ -180,9 +187,9 @@ export default function RegistrationApp() {
                       登録するお菓子（個数を入力してください）:
                     </p>
                     <Input
-                      value={itemName}
-                      onChange={(e) => setItemName(e.target.value)}
+                      value={currentSnack}
                       placeholder="お菓子の名前"
+                      readOnly
                       className="text-xl h-16 px-6 w-full mb-2"
                     />
                     <Input
@@ -197,21 +204,15 @@ export default function RegistrationApp() {
                     </Button>
                   </div>
                   <div className="mt-4 h-[200px] overflow-y-auto border p-4 rounded-md">
-                    {items.length > 0 ? (
-                      items.map((item, index) => (
+                    {snacks.length > 0 ? (
+                      snacks.map((snack, index) => (
                         <div
                           key={index}
                           className="flex justify-between items-center mb-2"
                         >
                           <p className="text-xl">
-                            {item.name}: {item.quantity}個
+                            {snack.name}: {snack.quantity}個
                           </p>
-                          <Button
-                            variant="destructive"
-                            onClick={() => removeItem(index)}
-                          >
-                            削除
-                          </Button>
                         </div>
                       ))
                     ) : (
@@ -248,9 +249,9 @@ export default function RegistrationApp() {
                 <CardContent className="space-y-4">
                   <p className="text-xl">合計: {price}円</p>
                   <div className="h-[200px] overflow-y-auto border p-4 text-xl">
-                    {items.map((item, index) => (
+                    {snacks.map((snack, index) => (
                       <p key={index}>
-                        {item.name}: {item.quantity}個
+                        {snack.name}: {snack.quantity}個
                       </p>
                     ))}
                   </div>
