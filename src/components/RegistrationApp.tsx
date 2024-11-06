@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRegistration } from "@/context/RegistrationContext";
+import DbSnackRegistration from "@/components/DbSnackRegistration";
+import NewSnackRegistration from "@/components/NewSnackRegistration";
 
 // Snack型を定義
 type Snack = {
@@ -20,7 +21,6 @@ type Snack = {
 };
 
 export default function RegistrationApp() {
-  const router = useRouter();
   const { snacks, setSnacks, currentSnack, setCurrentSnack } =
     useRegistration() as {
       snacks: Snack[];
@@ -32,9 +32,9 @@ export default function RegistrationApp() {
   const [step, setStep] = useState(0);
   const [price, setPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(0);
-
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
+  const [subView, setSubView] = useState<
+    "none" | "dbSnackRegistration" | "newSnackRegistration"
+  >("none");
 
   const addItem = () => {
     if (currentSnack && quantity > 0) {
@@ -90,7 +90,7 @@ export default function RegistrationApp() {
           className="w-full h-16 text-xl justify-start px-6"
           onClick={() => {
             setCurrentView("snackRegistration");
-            setStep(0); // snackRegistrationに移行したときにstepを初期化
+            setStep(0);
           }}
         >
           お菓子入庫
@@ -151,7 +151,7 @@ export default function RegistrationApp() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={nextStep}
+                    onClick={() => setStep(1)}
                     className="text-xl px-6 py-3"
                   >
                     次へ
@@ -168,12 +168,18 @@ export default function RegistrationApp() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="flex space-x-4 justify-center">
                     <Button
-                      onClick={() => router.push("/newSnackRegistration")}
+                      onClick={() => setSubView("dbSnackRegistration")}
                       className="text-xl py-3 h-auto whitespace-normal text-center"
                     >
-                      お菓子を登録
+                      データベースから登録
+                    </Button>
+                    <Button
+                      onClick={() => setSubView("newSnackRegistration")}
+                      className="text-xl py-3 h-auto whitespace-normal text-center"
+                    >
+                      新しく登録
                     </Button>
                   </div>
                   <div className="mt-4 p-4 border rounded-md">
@@ -217,14 +223,14 @@ export default function RegistrationApp() {
                 <CardFooter className="justify-between">
                   <Button
                     variant="outline"
-                    onClick={prevStep}
+                    onClick={() => setStep(0)}
                     className="text-xl px-6 py-3"
                   >
                     戻る
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={nextStep}
+                    onClick={() => setStep(2)}
                     className="text-xl px-6 py-3"
                   >
                     次へ
@@ -253,7 +259,7 @@ export default function RegistrationApp() {
                 <CardFooter className="justify-between">
                   <Button
                     variant="outline"
-                    onClick={prevStep}
+                    onClick={() => setStep(1)}
                     className="text-xl px-6 py-3"
                   >
                     戻る
@@ -272,10 +278,23 @@ export default function RegistrationApp() {
     </Card>
   );
 
+  const renderDbSnackRegistration = () => (
+    <DbSnackRegistration returnToCase1={() => setSubView("none")} />
+  );
+
+  const renderNewSnackRegistration = () => (
+    <NewSnackRegistration returnToCase1={() => setSubView("none")} />
+  );
+
   return (
-    <div className="flex items-center justify-center min-h-screen p-8">
+    <div className="flex justify-center min-h-screen p-8">
       <div className="w-full max-w-2xl">
-        {currentView === "main" ? renderMainView() : renderSnackRegistration()}
+        {subView === "none" && currentView === "main" && renderMainView()}
+        {subView === "none" &&
+          currentView === "snackRegistration" &&
+          renderSnackRegistration()}
+        {subView === "dbSnackRegistration" && renderDbSnackRegistration()}
+        {subView === "newSnackRegistration" && renderNewSnackRegistration()}
       </div>
     </div>
   );
