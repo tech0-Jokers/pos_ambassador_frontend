@@ -16,17 +16,19 @@ import NewSnackRegistration from "@/components/NewSnackRegistration";
 
 // Snack型を定義
 type Snack = {
+  productId: number; // 商品IDを追加
   name: string;
   quantity: number;
 };
 
 export default function RegistrationApp() {
-  const { snacks, setSnacks, currentSnack, setCurrentSnack } =
+  const { snacks, setSnacks, currentSnack, setCurrentSnack, snacksData } =
     useRegistration() as {
       snacks: Snack[];
       setSnacks: React.Dispatch<React.SetStateAction<Snack[]>>;
       currentSnack: string;
       setCurrentSnack: React.Dispatch<React.SetStateAction<string>>;
+      snacksData: Snack[]; // snacksData の型も追加
     };
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
@@ -38,14 +40,38 @@ export default function RegistrationApp() {
 
   const addItem = () => {
     if (currentSnack && quantity > 0) {
-      setSnacks([...snacks, { name: currentSnack, quantity }]);
-      setCurrentSnack("");
-      setQuantity(0);
+      const productId = getProductIdByName(currentSnack); // 商品IDを取得（後述）
+      if (productId === -1) {
+        alert("無効な商品です。");
+        return;
+      }
+
+      setSnacks([...snacks, { productId, name: currentSnack, quantity }]);
+      setCurrentSnack(""); // 初期化
+      setQuantity(0); // 初期化
     }
+  };
+
+  const getProductIdByName = (name: string): number => {
+    const product = snacksData.find((snack) => snack.name === name); // snacksDataは商品リスト
+    return product?.productId || -1; // 該当しない場合は-1を返す
   };
 
   const handleRegister = async () => {
     try {
+      // リクエストデータを準備
+      const requestBody = {
+        entryDate: new Date().toISOString(), // 現在日時
+        price: price, // 合計金額
+        userId: 1, // ユーザーID（固定）
+        organizationId: 1, // 組織ID（固定）
+        items: snacks.map((snack) => ({
+          productId: snack.productId, // 商品ID
+          quantity: snack.quantity, // 入庫個数
+        })),
+      };
+
+      // FastAPIへPOSTリクエストを送信
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/recieving_register`,
         {
@@ -53,11 +79,7 @@ export default function RegistrationApp() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            price: price,
-            items: snacks,
-            entryDate: new Date().toISOString(),
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -187,7 +209,9 @@ export default function RegistrationApp() {
                       登録するお菓子（個数を入力してください）:
                     </p>
                     <Input
-                      value={currentSnack}
+                      value={
+                        typeof currentSnack === "string" ? currentSnack : ""
+                      }
                       placeholder="お菓子の名前"
                       readOnly
                       className="text-xl h-16 px-6 w-full mb-2"
