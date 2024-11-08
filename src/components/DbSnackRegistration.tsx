@@ -81,7 +81,7 @@ export default function DbSnackRegistration({
           {filteredSnacks.map((snack, index) => (
             <Card
               key={index}
-              className="flex flex-col items-center p-4 shadow-md"
+              className="flex flex-col items-center p-4 shadow-md transparent-container"
             >
               <CardHeader>
                 <CardTitle className="text-xl font-bold">
