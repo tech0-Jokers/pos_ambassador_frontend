@@ -237,6 +237,14 @@ export default function RegistrationApp() {
                           <p className="text-xl">
                             {snack.name}: {snack.quantity}個
                           </p>
+                          <Button
+                            variant="outline"
+                            onClick={() => removeItem(index)} // 削除処理を呼び出す
+                            className="text-red-500 p-2 rounded-full flex items-center justify-center"
+                            title="削除" // ボタンの説明をツールチップで表示
+                          >
+                            ✕
+                          </Button>
                         </div>
                       ))
                     ) : (
@@ -301,6 +309,12 @@ export default function RegistrationApp() {
       })()}
     </Card>
   );
+
+  // 削除ロジック
+  const removeItem = (index: number) => {
+    const updatedSnacks = snacks.filter((_, i) => i !== index);
+    setSnacks(updatedSnacks);
+  };
 
   const renderDbSnackRegistration = () => (
     <DbSnackRegistration returnToCase1={() => setSubView("none")} />
