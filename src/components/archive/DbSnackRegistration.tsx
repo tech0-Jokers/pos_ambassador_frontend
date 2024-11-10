@@ -12,20 +12,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Props型
 type DbSnackRegistrationProps = {
   returnToCase1: () => void;
 };
 
-// APIレスポンスの型（バックエンドの生データ型）
-type ApiSnack = {
-  product_id: number; // 商品ID
-  product_name: string; // 商品名
-  product_explanation: string | null; // 商品説明
-  product_image_url: string | null; // 商品画像URL
-};
-
-// フロントエンドで使用する型
 type Snack = {
   productId: number; // 商品ID
   name: string; // 商品名
@@ -33,9 +23,8 @@ type Snack = {
   imageUrl: string; // 商品画像URL
 };
 
-// APIレスポンス型
 type ApiResponse = {
-  products: ApiSnack[]; // 商品リスト
+  products: Snack[]; // 商品リスト
 };
 
 export default function DbSnackRegistration({
@@ -77,7 +66,6 @@ export default function DbSnackRegistration({
     },
   ];
 
-  // データ取得ロジック
   useEffect(() => {
     const fetchSnacks = async () => {
       try {
@@ -90,19 +78,15 @@ export default function DbSnackRegistration({
           throw new Error("データの取得に失敗しました");
         }
 
-        // レスポンスデータを取得
+        // 型を指定してレスポンスデータを取得
         const data: ApiResponse = await response.json();
-
-        // バックエンド型（ApiSnack）からフロントエンド型（Snack）に変換
-        const databaseSnacks: Snack[] = data.products.map((snack) => ({
-          productId: snack.product_id,
-          name: snack.product_name,
-          description: snack.product_explanation || "説明なし",
-          imageUrl:
-            snack.product_image_url || "https://via.placeholder.com/150",
+        const databaseSnacks = data.products.map((snack) => ({
+          productId: snack.productId,
+          name: snack.name,
+          description: snack.description,
+          imageUrl: snack.imageUrl,
         }));
 
-        // サンプルデータと統合
         const mergedSnacks = [...sampleSnacks, ...databaseSnacks];
         setSnacks(mergedSnacks); // ローカル状態に保存
         setSnacksData(mergedSnacks); // コンテキストにも保存
@@ -116,14 +100,12 @@ export default function DbSnackRegistration({
     fetchSnacks();
   }, []);
 
-  // 検索機能
-  const filteredSnacks = snackName.trim()
-    ? snacks.filter((snack) =>
-        snack.name.toLowerCase().includes(snackName.trim().toLowerCase())
-      )
-    : [];
+  const filteredSnacks = snacks.filter((snack) =>
+    snackName.trim() === ""
+      ? false // 検索文字列が空の場合、何も表示しない
+      : snack.name.toLowerCase().includes(snackName.trim().toLowerCase())
+  );
 
-  // 登録処理
   const handleRegister = (snack: Snack) => {
     console.log("Registered snack object:", snack); // snackオブジェクトを確認
     console.log("Registered snack name:", snack.name); // snack.nameを確認
@@ -131,7 +113,6 @@ export default function DbSnackRegistration({
     returnToCase1();
   };
 
-  // JSX
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">データベースからお菓子を登録</h1>
