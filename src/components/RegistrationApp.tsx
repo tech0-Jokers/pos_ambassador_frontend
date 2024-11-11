@@ -193,13 +193,13 @@ export default function RegistrationApp() {
                   <div className="flex space-x-4 justify-center">
                     <Button
                       onClick={() => setSubView("dbSnackRegistration")}
-                      className="text-xl py-3 h-auto whitespace-normal text-center"
+                      className="text-xl py-3 h-auto whitespace-normal text-center bg-purple-700 text-white hover:bg-purple-800"
                     >
                       データベースから登録
                     </Button>
                     <Button
                       onClick={() => setSubView("newSnackRegistration")}
-                      className="text-xl py-3 h-auto whitespace-normal text-center"
+                      className="text-xl py-3 h-auto whitespace-normal text-center bg-purple-700 text-white hover:bg-purple-800"
                     >
                       新しく登録
                     </Button>
@@ -223,7 +223,10 @@ export default function RegistrationApp() {
                       placeholder="個数"
                       className="text-xl h-16 px-6 w-full mb-2"
                     />
-                    <Button onClick={addItem} className="text-xl w-full py-3">
+                    <Button
+                      onClick={addItem}
+                      className="text-xl w-full py-3 bg-purple-700 text-white hover:bg-purple-800"
+                    >
                       追加
                     </Button>
                   </div>
@@ -298,7 +301,7 @@ export default function RegistrationApp() {
                   </Button>
                   <Button
                     onClick={handleRegister}
-                    className="text-xl px-6 py-3"
+                    className="text-xl px-6 py-3 bg-purple-700 text-white"
                   >
                     登録
                   </Button>

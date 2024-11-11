@@ -162,7 +162,12 @@ export default function DbSnackRegistration({
                 />
               </CardContent>
               <CardFooter className="mt-auto">
-                <Button onClick={() => handleRegister(snack)}>登録</Button>
+                <Button
+                  onClick={() => handleRegister(snack)}
+                  className="bg-purple-700 text-white hover:bg-purple-800"
+                >
+                  登録
+                </Button>
               </CardFooter>
             </Card>
           ))}
@@ -170,7 +175,10 @@ export default function DbSnackRegistration({
       ) : (
         <p className="text-gray-500">該当するお菓子が見つかりません。</p>
       )}
-      <Button onClick={returnToCase1} className="mt-4">
+      <Button
+        onClick={returnToCase1}
+        className="mt-4 bg-purple-700 text-white hover:bg-purple-800"
+      >
         戻る
       </Button>
     </div>

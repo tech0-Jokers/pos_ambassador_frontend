@@ -4,9 +4,10 @@
 
 /* 背景画像を適用するクラス */
 .bg-snack {
-  background-image: url("https://res.cloudinary.com/dftirqnc5/image/upload/ce81bb42-90da-43b1-901c-76b5446f292b_cdu7rm.webp");
-  background-size: cover;
-  background-position: center;
+  background-color: #786481; /* 淡い紫色の背景 */
+  background-image: url("https://res.cloudinary.com/dftirqnc5/image/upload/v1731325886/Jokers_backimage3_ejtohq.png");
+  background-size: contain; /* 画像全体を表示 */
+  background-position: top center;
   background-repeat: no-repeat;
   min-height: 100vh;
   width: 100%;

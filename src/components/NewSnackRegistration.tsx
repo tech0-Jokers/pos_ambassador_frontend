@@ -88,10 +88,18 @@ export default function NewSnackRegistration({
           className="w-full"
         />
       </div>
-      <Button onClick={handleRegister} className="mr-2">
+      <Button
+        onClick={handleRegister}
+        className="mr-2 bg-purple-700 text-white hover:bg-purple-800"
+      >
         登録
       </Button>
-      <Button onClick={returnToCase1}>戻る</Button>
+      <Button
+        onClick={returnToCase1}
+        className="bg-purple-700 text-white hover:bg-purple-800"
+      >
+        戻る
+      </Button>
     </div>
   );
 }
