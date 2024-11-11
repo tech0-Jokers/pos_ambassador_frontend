@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRegistration } from "@/context/RegistrationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 // Props型
 type DbSnackRegistrationProps = {
@@ -42,40 +43,43 @@ export default function DbSnackRegistration({
   returnToCase1,
 }: DbSnackRegistrationProps) {
   const [snackName, setSnackName] = useState("");
-  const { setCurrentSnack, snacksData, setSnacksData } = useRegistration(); // snacksDataを取得・更新
+  const { setCurrentSnack, setSnacksData } = useRegistration(); // snacksDataを取得・更新
   const [snacks, setSnacks] = useState<Snack[]>([]);
 
   // サンプルデータ
-  const sampleSnacks: Snack[] = [
-    {
-      productId: 101,
-      name: "ポテトチップス",
-      description: "サクサクのポテトチップス",
-      imageUrl:
-        "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788728/potechi_veyabd.webp",
-    },
-    {
-      productId: 102,
-      name: "チョコレート",
-      description: "濃厚なチョコレート",
-      imageUrl:
-        "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788236/chocolate_na6lsh.webp",
-    },
-    {
-      productId: 103,
-      name: "グミキャンディー",
-      description: "フルーティーなグミ",
-      imageUrl:
-        "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788535/fruitgumi_hd5flb.webp",
-    },
-    {
-      productId: 104,
-      name: "ポップコーン",
-      description: "甘いポッポコーン",
-      imageUrl:
-        "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788850/carapop_njcrsq.webp",
-    },
-  ];
+  const sampleSnacks: Snack[] = useMemo(
+    () => [
+      {
+        productId: 101,
+        name: "ポテトチップス",
+        description: "サクサクのポテトチップス",
+        imageUrl:
+          "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788728/potechi_veyabd.webp",
+      },
+      {
+        productId: 102,
+        name: "チョコレート",
+        description: "濃厚なチョコレート",
+        imageUrl:
+          "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788236/chocolate_na6lsh.webp",
+      },
+      {
+        productId: 103,
+        name: "グミキャンディー",
+        description: "フルーティーなグミ",
+        imageUrl:
+          "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788535/fruitgumi_hd5flb.webp",
+      },
+      {
+        productId: 104,
+        name: "ポップコーン",
+        description: "甘いポッポコーン",
+        imageUrl:
+          "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788850/carapop_njcrsq.webp",
+      },
+    ],
+    []
+  );
 
   // データ取得ロジック
   useEffect(() => {
@@ -90,10 +94,8 @@ export default function DbSnackRegistration({
           throw new Error("データの取得に失敗しました");
         }
 
-        // レスポンスデータを取得
         const data: ApiResponse = await response.json();
 
-        // バックエンド型（ApiSnack）からフロントエンド型（Snack）に変換
         const databaseSnacks: Snack[] = data.products.map((snack) => ({
           productId: snack.product_id,
           name: snack.product_name,
@@ -102,19 +104,18 @@ export default function DbSnackRegistration({
             snack.product_image_url || "https://via.placeholder.com/150",
         }));
 
-        // サンプルデータと統合
         const mergedSnacks = [...sampleSnacks, ...databaseSnacks];
-        setSnacks(mergedSnacks); // ローカル状態に保存
-        setSnacksData(mergedSnacks); // コンテキストにも保存
+        setSnacks(mergedSnacks);
+        setSnacksData(mergedSnacks);
       } catch (error) {
         console.error("Error fetching snacks:", error);
-        setSnacks(sampleSnacks); // サンプルデータをセット
-        setSnacksData(sampleSnacks); // コンテキストにもセット
+        setSnacks(sampleSnacks);
+        setSnacksData(sampleSnacks);
       }
     };
 
     fetchSnacks();
-  }, []);
+  }, [sampleSnacks, setSnacksData]); // 依存関係を追加
 
   // 検索機能
   const filteredSnacks = snackName.trim()
@@ -155,9 +156,11 @@ export default function DbSnackRegistration({
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center text-center pb-6">
                 <p>{snack.description}</p>
-                <img
+                <Image
                   src={snack.imageUrl}
                   alt={snack.name}
+                  width={160} // 必要な幅
+                  height={160} // 必要な高さ
                   className="mt-2 w-40 h-40 object-cover rounded-md"
                 />
               </CardContent>
