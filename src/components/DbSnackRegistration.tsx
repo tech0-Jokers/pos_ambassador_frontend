@@ -26,14 +26,6 @@ type ApiSnack = {
   product_image_url: string | null; // 商品画像URL
 };
 
-// フロントエンドで使用する型
-type Snack = {
-  productId: number; // 商品ID
-  name: string; // 商品名
-  description: string; // 商品説明
-  imageUrl: string; // 商品画像URL
-};
-
 // APIレスポンス型
 type ApiResponse = {
   products: ApiSnack[]; // 商品リスト
@@ -44,37 +36,37 @@ export default function DbSnackRegistration({
 }: DbSnackRegistrationProps) {
   const [snackName, setSnackName] = useState("");
   const { setCurrentSnack, setSnacksData } = useRegistration(); // snacksDataを取得・更新
-  const [snacks, setSnacks] = useState<Snack[]>([]);
+  const [snacks, setSnacks] = useState<ApiSnack[]>([]);
 
   // サンプルデータ
-  const sampleSnacks: Snack[] = useMemo(
+  const sampleSnacks: ApiSnack[] = useMemo(
     () => [
       {
-        productId: 101,
-        name: "ポテトチップス",
-        description: "サクサクのポテトチップス",
-        imageUrl:
+        product_id: 101,
+        product_name: "ポテトチップス",
+        product_explanation: "サクサクのポテトチップス",
+        product_image_url:
           "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788728/potechi_veyabd.webp",
       },
       {
-        productId: 102,
-        name: "チョコレート",
-        description: "濃厚なチョコレート",
-        imageUrl:
+        product_id: 102,
+        product_name: "チョコレート",
+        product_explanation: "濃厚なチョコレート",
+        product_image_url:
           "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788236/chocolate_na6lsh.webp",
       },
       {
-        productId: 103,
-        name: "グミキャンディー",
-        description: "フルーティーなグミ",
-        imageUrl:
+        product_id: 103,
+        product_name: "グミキャンディー",
+        product_explanation: "フルーティーなグミ",
+        product_image_url:
           "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788535/fruitgumi_hd5flb.webp",
       },
       {
-        productId: 104,
-        name: "ポップコーン",
-        description: "甘いポッポコーン",
-        imageUrl:
+        product_id: 104,
+        product_name: "ポップコーン",
+        product_explanation: "甘いポッポコーン",
+        product_image_url:
           "https://res.cloudinary.com/dftirqnc5/image/upload/v1727788850/carapop_njcrsq.webp",
       },
     ],
@@ -95,16 +87,7 @@ export default function DbSnackRegistration({
         }
 
         const data: ApiResponse = await response.json();
-
-        const databaseSnacks: Snack[] = data.products.map((snack) => ({
-          productId: snack.product_id,
-          name: snack.product_name,
-          description: snack.product_explanation || "説明なし",
-          imageUrl:
-            snack.product_image_url || "https://via.placeholder.com/150",
-        }));
-
-        const mergedSnacks = [...sampleSnacks, ...databaseSnacks];
+        const mergedSnacks = [...sampleSnacks, ...data.products];
         setSnacks(mergedSnacks);
         setSnacksData(mergedSnacks);
       } catch (error) {
@@ -115,20 +98,22 @@ export default function DbSnackRegistration({
     };
 
     fetchSnacks();
-  }, [sampleSnacks, setSnacksData]); // 依存関係を追加
+  }, [sampleSnacks, setSnacksData]);
 
   // 検索機能
   const filteredSnacks = snackName.trim()
     ? snacks.filter((snack) =>
-        snack.name.toLowerCase().includes(snackName.trim().toLowerCase())
+        snack.product_name
+          .toLowerCase()
+          .includes(snackName.trim().toLowerCase())
       )
     : [];
 
   // 登録処理
-  const handleRegister = (snack: Snack) => {
-    console.log("Registered snack object:", snack); // snackオブジェクトを確認
-    console.log("Registered snack name:", snack.name); // snack.nameを確認
-    setCurrentSnack(snack.name); // snack全体ではなく、名前だけをセット
+  const handleRegister = (snack: ApiSnack) => {
+    console.log("Registered snack object:", snack);
+    console.log("Registered snack name:", snack.product_name);
+    setCurrentSnack(snack.product_name);
     returnToCase1();
   };
 
@@ -142,7 +127,7 @@ export default function DbSnackRegistration({
         placeholder="お菓子の名前を入力"
         className="mb-4 w-full p-2 border border-gray-300 rounded"
       />
-      {filteredSnacks.length > 0 ? (
+      {snackName.trim() && filteredSnacks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredSnacks.map((snack, index) => (
             <Card
@@ -151,16 +136,18 @@ export default function DbSnackRegistration({
             >
               <CardHeader>
                 <CardTitle className="text-xl font-bold">
-                  {snack.name}
+                  {snack.product_name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center text-center pb-6">
-                <p>{snack.description}</p>
+                <p>{snack.product_explanation || "説明なし"}</p>
                 <Image
-                  src={snack.imageUrl}
-                  alt={snack.name}
-                  width={160} // 必要な幅
-                  height={160} // 必要な高さ
+                  src={
+                    snack.product_image_url || "https://via.placeholder.com/150"
+                  }
+                  alt={snack.product_name}
+                  width={160}
+                  height={160}
                   className="mt-2 w-40 h-40 object-cover rounded-md"
                 />
               </CardContent>
@@ -175,9 +162,9 @@ export default function DbSnackRegistration({
             </Card>
           ))}
         </div>
-      ) : (
+      ) : snackName.trim() ? (
         <p className="text-gray-500">該当するお菓子が見つかりません。</p>
-      )}
+      ) : null}
       <Button
         onClick={returnToCase1}
         className="mt-4 bg-purple-700 text-white hover:bg-purple-800"
