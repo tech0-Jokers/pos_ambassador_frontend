@@ -49,9 +49,15 @@ export default function NewSnackRegistration({
 
       if (response.ok) {
         const data = await response.json();
-        setCurrentSnack(data.name); // 登録されたお菓子名をセット
+        console.log("登録成功:", data);
+
+        // 登録されたお菓子名を即座にセット
+        setCurrentSnack(data.name);
+
         alert("お菓子の登録が成功しました！");
-        returnToCase1(); // 登録後に元の画面へ戻る
+
+        // 元の画面に戻る
+        returnToCase1();
       } else {
         const errorData = await response.json();
         alert(`エラー: ${errorData.message}`);
