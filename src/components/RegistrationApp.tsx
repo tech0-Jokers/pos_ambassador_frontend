@@ -73,7 +73,7 @@ export default function RegistrationApp() {
 
       // FastAPIへPOSTリクエストを送信
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/recieving_register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/receiving_register`,
         {
           method: "POST",
           headers: {
