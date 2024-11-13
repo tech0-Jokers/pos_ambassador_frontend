@@ -14,11 +14,11 @@ import { useRegistration } from "@/context/RegistrationContext";
 import DbSnackRegistration from "@/components/DbSnackRegistration";
 import NewSnackRegistration from "@/components/NewSnackRegistration";
 
-// Snack型を定義
+// Snack型を修正
 type Snack = {
-  productId: number; // 商品IDを追加
-  name: string;
-  quantity: number;
+  product_id: number; // 商品ID
+  product_name: string; // 商品名
+  incoming_quantity: number; // 入庫個数
 };
 
 export default function RegistrationApp() {
@@ -30,44 +30,51 @@ export default function RegistrationApp() {
       setCurrentSnack: React.Dispatch<React.SetStateAction<string>>;
       snacksData: Snack[]; // snacksData の型も追加
     };
+
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
-  const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0);
+  const [purchase_amount, setPurchaseAmount] = useState<number>(0); // 合計金額
+  const [incoming_quantity, setIncomingQuantity] = useState<number>(0); // 入庫個数
   const [subView, setSubView] = useState<
     "none" | "dbSnackRegistration" | "newSnackRegistration"
   >("none");
 
+  // 商品を追加する関数
   const addItem = () => {
-    if (currentSnack && quantity > 0) {
-      const productId = getProductIdByName(currentSnack); // 商品IDを取得（後述）
-      if (productId === -1) {
+    if (currentSnack && incoming_quantity > 0) {
+      const product_id = getProductIdByName(currentSnack); // 商品IDを取得
+      if (product_id === -1) {
         alert("無効な商品です。");
         return;
       }
 
-      setSnacks([...snacks, { productId, name: currentSnack, quantity }]);
+      setSnacks([
+        ...snacks,
+        { product_id, product_name: currentSnack, incoming_quantity },
+      ]);
       setCurrentSnack(""); // 初期化
-      setQuantity(0); // 初期化
+      setIncomingQuantity(0); // 初期化
     }
   };
 
+  // 商品名からproduct_idを取得する関数
   const getProductIdByName = (name: string): number => {
-    const product = snacksData.find((snack) => snack.name === name); // snacksDataは商品リスト
-    return product?.productId || -1; // 該当しない場合は-1を返す
+    const product = snacksData.find((snack) => snack.product_name === name); // snacksDataは商品リスト
+    return product?.product_id || -1; // 該当しない場合は-1を返す
   };
 
+  // 登録処理を実行する関数
   const handleRegister = async () => {
     try {
       // リクエストデータを準備
       const requestBody = {
         entryDate: new Date().toISOString(), // 現在日時
-        price: price, // 合計金額
-        userId: 1, // ユーザーID（固定）
-        organizationId: 1, // 組織ID（固定）
+        purchase_amount, // 合計金額
+        user_id: 1, // ユーザーID（固定）
+        organization_id: 1, // 組織ID（固定）
         items: snacks.map((snack) => ({
-          productId: snack.productId, // 商品ID
-          quantity: snack.quantity, // 入庫個数
+          product_id: snack.product_id, // 商品ID
+          incoming_quantity: snack.incoming_quantity, // 入庫個数
         })),
       };
 
@@ -88,7 +95,7 @@ export default function RegistrationApp() {
         setCurrentView("main");
         setStep(0);
         setSnacks([]);
-        setPrice(0);
+        setPurchaseAmount(0);
       } else {
         const errorData = await response.json();
         alert(`登録失敗: ${errorData.message}`);
@@ -157,8 +164,10 @@ export default function RegistrationApp() {
                 <CardContent>
                   <Input
                     type="number"
-                    value={price}
-                    onChange={(e) => setPrice(parseInt(e.target.value))}
+                    value={purchase_amount}
+                    onChange={(e) =>
+                      setPurchaseAmount(parseInt(e.target.value))
+                    }
                     placeholder="金額"
                     className="text-xl h-16 px-6 w-full"
                   />
@@ -218,8 +227,10 @@ export default function RegistrationApp() {
                     />
                     <Input
                       type="number"
-                      value={quantity}
-                      onChange={(e) => setQuantity(parseInt(e.target.value))}
+                      value={incoming_quantity}
+                      onChange={(e) =>
+                        setIncomingQuantity(parseInt(e.target.value))
+                      }
                       placeholder="個数"
                       className="text-xl h-16 px-6 w-full mb-2"
                     />
@@ -238,7 +249,7 @@ export default function RegistrationApp() {
                           className="flex justify-between items-center mb-2"
                         >
                           <p className="text-xl">
-                            {snack.name}: {snack.quantity}個
+                            {snack.product_name}: {snack.incoming_quantity}個
                           </p>
                           <Button
                             variant="outline"
@@ -273,41 +284,6 @@ export default function RegistrationApp() {
                 </CardFooter>
               </>
             );
-          case 2:
-            return (
-              <>
-                <CardHeader>
-                  <CardTitle className="text-center text-2xl">
-                    これでよければ登録してくださいね！
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-xl">合計: {price}円</p>
-                  <div className="h-[200px] overflow-y-auto border p-4 text-xl">
-                    {snacks.map((snack, index) => (
-                      <p key={index}>
-                        {snack.name}: {snack.quantity}個
-                      </p>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setStep(1)}
-                    className="text-xl px-6 py-3"
-                  >
-                    戻る
-                  </Button>
-                  <Button
-                    onClick={handleRegister}
-                    className="text-xl px-6 py-3 bg-purple-700 text-white"
-                  >
-                    登録
-                  </Button>
-                </CardFooter>
-              </>
-            );
         }
       })()}
     </Card>
@@ -319,11 +295,11 @@ export default function RegistrationApp() {
     setSnacks(updatedSnacks);
   };
 
-  const renderDbSnackRegistration = () => (
+  const renderDbSnackRegistration = (): JSX.Element => (
     <DbSnackRegistration returnToCase1={() => setSubView("none")} />
   );
 
-  const renderNewSnackRegistration = () => (
+  const renderNewSnackRegistration = (): JSX.Element => (
     <NewSnackRegistration returnToCase1={() => setSubView("none")} />
   );
 

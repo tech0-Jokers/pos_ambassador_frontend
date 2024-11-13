@@ -12,7 +12,7 @@ type NewSnackRegistrationProps = {
 export default function NewSnackRegistration({
   returnToCase1,
 }: NewSnackRegistrationProps) {
-  const [snackName, setSnackName] = useState("");
+  const [snackProductName, setSnackProductName] = useState(""); // 修正: snackName → snackProductName
   const [snackDescription, setSnackDescription] = useState("");
   const [snackImage, setSnackImage] = useState<File | null>(null);
   const { setCurrentSnack } = useRegistration();
@@ -24,23 +24,23 @@ export default function NewSnackRegistration({
   };
 
   const handleRegister = async () => {
-    if (!snackName || !snackDescription || !snackImage) {
+    if (!snackProductName || !snackDescription || !snackImage) {
       alert("すべてのフィールドを入力してください");
       return;
     }
 
     // 組織IDをここで定義（将来、動的に変更可能に）
-    const organizationId = 1;
+    const organization_id = 1; // 修正: organizationId → organization_id
 
     const formData = new FormData();
-    formData.append("organization_id", organizationId.toString());
-    formData.append("name", snackName);
+    formData.append("organization_id", organization_id.toString());
+    formData.append("product_name", snackProductName); // 修正: name → product_name
     formData.append("description", snackDescription);
     formData.append("image", snackImage);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/newsnacks/?organization_id=${organizationId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/newsnacks/?organization_id=${organization_id}`,
         {
           method: "POST",
           body: formData,
@@ -52,7 +52,7 @@ export default function NewSnackRegistration({
         console.log("登録成功:", data);
 
         // 登録されたお菓子名を即座にセット
-        setCurrentSnack(data.name);
+        setCurrentSnack(data.product_name); // 修正: name → product_name
 
         alert("お菓子の登録が成功しました！");
 
@@ -72,8 +72,8 @@ export default function NewSnackRegistration({
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">新しくお菓子を登録</h1>
       <Input
-        value={snackName}
-        onChange={(e) => setSnackName(e.target.value)}
+        value={snackProductName} // 修正: snackName → snackProductName
+        onChange={(e) => setSnackProductName(e.target.value)} // 修正: snackName → snackProductName
         placeholder="お菓子の名前を入力"
         className="mb-4 w-full p-2 border border-gray-300 rounded"
       />
