@@ -34,13 +34,13 @@ export default function NewSnackRegistration({
 
     const formData = new FormData();
     formData.append("organization_id", organization_id.toString());
-    formData.append("product_name", snackProductName); // 修正: name → product_name
+    formData.append("name", snackProductName); // 修正: name → product_name
     formData.append("description", snackDescription);
     formData.append("image", snackImage);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/newsnacks/?organization_id=${organization_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/newsnacks/`,
         {
           method: "POST",
           body: formData,
