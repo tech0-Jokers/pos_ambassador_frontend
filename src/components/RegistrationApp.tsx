@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,19 +23,20 @@ type Snack = {
 };
 
 export default function RegistrationApp() {
+  const router = useRouter(); // ルーターを初期化
   const { snacks, setSnacks, currentSnack, setCurrentSnack, snacksData } =
     useRegistration() as {
       snacks: Snack[];
       setSnacks: React.Dispatch<React.SetStateAction<Snack[]>>;
       currentSnack: string;
       setCurrentSnack: React.Dispatch<React.SetStateAction<string>>;
-      snacksData: Snack[]; // snacksData の型も追加
+      snacksData: Snack[];
     };
 
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
-  const [purchase_amount, setPurchaseAmount] = useState<number>(0); // 合計金額
-  const [incoming_quantity, setIncomingQuantity] = useState<number>(0); // 入庫個数
+  const [purchase_amount, setPurchaseAmount] = useState<number>(0);
+  const [incoming_quantity, setIncomingQuantity] = useState<number>(0);
   const [subView, setSubView] = useState<
     "none" | "dbSnackRegistration" | "newSnackRegistration"
   >("none");
@@ -59,33 +61,29 @@ export default function RegistrationApp() {
 
   // 商品名からproduct_idを取得する関数
   const getProductIdByName = (name: string): number => {
-    const product = snacksData.find((snack) => snack.product_name === name); // snacksDataは商品リスト
-    return product?.product_id || -1; // 該当しない場合は-1を返す
+    const product = snacksData.find((snack) => snack.product_name === name);
+    return product?.product_id || -1;
   };
 
   // 登録処理を実行する関数
   const handleRegister = async () => {
     try {
-      // リクエストデータを準備
       const requestBody = {
-        entryDate: new Date().toISOString(), // 現在日時
-        purchase_amount, // 合計金額
-        user_id: 1, // ユーザーID（固定）
-        organization_id: 1, // 組織ID（固定）
+        entryDate: new Date().toISOString(),
+        purchase_amount,
+        user_id: 1,
+        organization_id: 1,
         items: snacks.map((snack) => ({
-          product_id: snack.product_id, // 商品ID
-          incoming_quantity: snack.incoming_quantity, // 入庫個数
+          product_id: snack.product_id,
+          incoming_quantity: snack.incoming_quantity,
         })),
       };
 
-      // FastAPIへPOSTリクエストを送信
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/receiving_register`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         }
       );
@@ -117,10 +115,7 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => {
-            setCurrentView("snackRegistration");
-            setStep(0);
-          }}
+          onClick={() => setCurrentView("snackRegistration")}
         >
           お菓子入庫
         </Button>
@@ -141,9 +136,9 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => alert("設定変更機能は準備中です")}
+          onClick={() => router.push("/snack-registration")}
         >
-          設定変更
+          開発中（お菓子登録機能）
         </Button>
       </CardContent>
     </Card>
