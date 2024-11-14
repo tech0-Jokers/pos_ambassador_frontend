@@ -279,6 +279,41 @@ export default function RegistrationApp() {
                 </CardFooter>
               </>
             );
+          case 2:
+            return (
+              <>
+                <CardHeader>
+                  <CardTitle className="text-center text-2xl">
+                    これでよければ登録してくださいね！
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xl">合計: {purchase_amount}円</p>
+                  <div className="h-[200px] overflow-y-auto border p-4 text-xl">
+                    {snacks.map((snack, index) => (
+                      <p key={index}>
+                        {snack.product_name}: {snack.incoming_quantity}個
+                      </p>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="justify-between">
+                  <Button
+                    variant="outline"
+                    onClick={() => setStep(1)}
+                    className="text-xl px-6 py-3"
+                  >
+                    戻る
+                  </Button>
+                  <Button
+                    onClick={handleRegister}
+                    className="text-xl px-6 py-3 bg-purple-700 text-white"
+                  >
+                    登録
+                  </Button>
+                </CardFooter>
+              </>
+            );
         }
       })()}
     </Card>
