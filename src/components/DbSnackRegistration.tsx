@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { userMap } from "@/utils/userMap";
 
 // Props型
 type DbSnackRegistrationProps = {
@@ -37,6 +39,7 @@ export default function DbSnackRegistration({
   const [snackName, setSnackName] = useState("");
   const { setCurrentSnack, setSnacksData } = useRegistration(); // snacksDataを取得・更新
   const [snacks, setSnacks] = useState<ApiSnack[]>([]);
+  const { data: session } = useSession(); // useSession から session を取得
 
   // サンプルデータ
   const sampleSnacks: ApiSnack[] = useMemo(
@@ -76,10 +79,11 @@ export default function DbSnackRegistration({
   // データ取得ロジック
   useEffect(() => {
     const fetchSnacks = async () => {
+      const userData = session?.user?.name ? userMap[session.user.name] : null;
+      const organization_id = session ? userData?.organization_id || 404 : 1;
       try {
-        const organizationId = 1;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/snacks/?organization_id=${organizationId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/snacks/?organization_id=${organization_id}`
         );
 
         if (!response.ok) {

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { userMap } from "@/utils/userMap";
 import { useRegistration } from "@/context/RegistrationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +18,7 @@ export default function NewSnackRegistration({
   const [snackDescription, setSnackDescription] = useState("");
   const [snackImage, setSnackImage] = useState<File | null>(null);
   const { setCurrentSnack } = useRegistration();
+  const { data: session } = useSession(); // セッション情報を取得
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -29,8 +32,9 @@ export default function NewSnackRegistration({
       return;
     }
 
-    // 組織IDをここで定義（将来、動的に変更可能に）
-    const organization_id = 1; // 修正: organizationId → organization_id
+    // ユーザー情報を取得
+    const userData = session?.user?.name ? userMap[session.user.name] : null;
+    const organization_id = userData?.organization_id || (session ? 404 : 1);
 
     const formData = new FormData();
     formData.append("organization_id", organization_id.toString());

@@ -1,23 +1,23 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import { organizationMap } from "@/utils/organizationMap";
+import { userMap } from "@/utils/userMap";
 
 export default function LoginStatus() {
   const { data: session } = useSession();
 
-  // ユーザー名から organization_id を取得
-  const organization_id =
-    session?.user?.name && organizationMap[session.user.name]
-      ? organizationMap[session.user.name]
-      : null;
+  // ユーザー名から user_id と organization_id を取得
+  const userData = session?.user?.name ? userMap[session.user.name] : null;
+  const organization_id = userData?.organization_id || (session ? 404 : 1); // ログイン中にデータがなければ404、未ログインなら1
 
   return (
     <div className="mb-4">
       {session ? (
         <>
           <p>ようこそ、{session.user?.name}さん！</p>
-          <p>組織ID: {organization_id || "不明"}</p>
+          <p>
+            組織ID: {organization_id === 404 ? "不明（404）" : organization_id}
+          </p>
           <button onClick={() => signOut()}>ログアウト</button>
         </>
       ) : (

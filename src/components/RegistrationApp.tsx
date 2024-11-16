@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { userMap } from "@/utils/userMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +26,7 @@ type Snack = {
 
 export default function RegistrationApp() {
   const router = useRouter(); // ルーターを初期化
+  const { data: session } = useSession();
   const { snacks, setSnacks, currentSnack, setCurrentSnack, snacksData } =
     useRegistration() as {
       snacks: Snack[];
@@ -67,18 +70,23 @@ export default function RegistrationApp() {
 
   // 登録処理を実行する関数
   const handleRegister = async () => {
-    try {
-      const requestBody = {
-        entryDate: new Date().toISOString(),
-        purchase_amount,
-        user_id: 1,
-        organization_id: 1,
-        items: snacks.map((snack) => ({
-          product_id: snack.product_id,
-          incoming_quantity: snack.incoming_quantity,
-        })),
-      };
+    const userData = session?.user?.name ? userMap[session.user.name] : null;
+    // 未ログインの場合は 1、ログイン済みで userMap に存在しない場合は 404
+    const user_id = session ? userData?.user_id || 404 : 1;
+    const organization_id = session ? userData?.organization_id || 404 : 1;
 
+    const requestBody = {
+      entryDate: new Date().toISOString(),
+      purchase_amount,
+      user_id,
+      organization_id,
+      items: snacks.map((snack) => ({
+        product_id: snack.product_id,
+        incoming_quantity: snack.incoming_quantity,
+      })),
+    };
+
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/receiving_register`,
         {
