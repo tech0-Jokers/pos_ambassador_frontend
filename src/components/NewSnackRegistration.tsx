@@ -17,7 +17,7 @@ export default function NewSnackRegistration({
   const [snackProductName, setSnackProductName] = useState(""); // 修正: snackName → snackProductName
   const [snackDescription, setSnackDescription] = useState("");
   const [snackImage, setSnackImage] = useState<File | null>(null);
-  const { setCurrentSnack } = useRegistration();
+  const { setSnacksData, setCurrentSnack } = useRegistration();
   const { data: session } = useSession(); // セッション情報を取得
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,13 +55,36 @@ export default function NewSnackRegistration({
         const data = await response.json();
         console.log("登録成功:", data);
 
+        // 新しく登録された商品をsnacksDataに追加
+        setSnacksData(
+          (
+            prevSnacksData: {
+              product_id: number;
+              product_name: string;
+              incoming_quantity: number;
+            }[]
+          ) => [
+            ...prevSnacksData,
+            {
+              product_id: data.product_id,
+              product_name: data.product_name,
+              incoming_quantity: 0, // 初期値
+            },
+          ]
+        );
+
         // 登録されたお菓子名を即座にセット
-        setCurrentSnack(data.product_name); // 修正: name → product_name
+        setCurrentSnack({
+          product_name: data.product_name,
+          product_id: data.product_id,
+        });
 
         alert("お菓子の登録が成功しました！");
 
-        // 元の画面に戻る
-        returnToCase1();
+        // 遷移を少し遅らせる
+        setTimeout(() => {
+          returnToCase1();
+        }, 200); // 200ms遅延
       } else {
         const errorData = await response.json();
         alert(`エラー: ${errorData.message}`);

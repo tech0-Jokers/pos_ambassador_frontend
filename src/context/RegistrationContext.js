@@ -4,7 +4,10 @@ const RegistrationContext = createContext();
 
 export const RegistrationProvider = ({ children }) => {
   const [snacks, setSnacks] = useState([]); // 登録されたお菓子のリスト
-  const [currentSnack, setCurrentSnack] = useState({ name: "", productId: -1 }); // 商品IDを保持
+  const [currentSnack, setCurrentSnack] = useState({
+    product_name: "",
+    product_id: -1,
+  }); // 商品IDを保持
   const [snacksData, setSnacksData] = useState([]); // データベースまたはサンプルのお菓子リスト
 
   return (
