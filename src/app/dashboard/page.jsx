@@ -3,30 +3,17 @@
 import { useState, useEffect } from "react";
 import "../globals.css"; // CSSファイルのパスを指定
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import FrequencyDonutChart from "@/components/chart/FrequencyDonutChart";
+import AgeDistributionChart from "@/components/chart/AgeDistributionChart";
+import BranchUsageChart from "@/components/chart/BranchUsageChart";
 
 // Mock data
 const initialFrequencyData = [
-  { name: "5回以上", value: 20, color: "hsl(var(--chart-1))" },
-  { name: "4回", value: 25, color: "hsl(var(--chart-2))" },
-  { name: "3回", value: 30, color: "hsl(var(--chart-3))" },
-  { name: "2回", value: 15, color: "hsl(var(--chart-4))" },
-  { name: "1回", value: 10, color: "hsl(var(--chart-5))" },
+  { name: "5回以上", value: 20 },
+  { name: "4回", value: 25 },
+  { name: "3回", value: 30 },
+  { name: "2回", value: 15 },
+  { name: "1回", value: 10 },
 ];
 
 const initialAgeData = [
@@ -208,31 +195,13 @@ export default function Component() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={frequencyData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {frequencyData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="text-sm text-center mt-4">
-                平均 3.4 回（前月��� 0.1回）
-                <br />
-                週3回以上 72 %（前月比 0.3%）
-              </div>
+              <FrequencyDonutChart
+                frequencyData={frequencyData}
+                average={3.4}
+                averageDiff={0.1}
+                weeklyUsagePercent={72}
+                weeklyUsagePercentDiff={0.3}
+              />
             </CardContent>
           </Card>
 
@@ -244,49 +213,25 @@ export default function Component() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ageData} layout="vertical">
-                    <XAxis type="number" domain={[0, 100]} unit="%" />
-                    <YAxis dataKey="age" type="category" width={50} />
-                    <Bar
-                      dataKey="percentage"
-                      radius={[0, 4, 4, 0]}
-                      barSize={20}
-                    />
-                    <ChartTooltip content={<UsageTooltipContent />} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <AgeDistributionChart
+                ageData={ageData}
+                UsageTooltipContent={UsageTooltipContent}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Branch Usage Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg text-purple-900">
+                部署別利用食数
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BranchUsageChart branchData={branchData} />
             </CardContent>
           </Card>
         </div>
-
-        {/* Branch Usage Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg text-purple-900">
-              部署別利用食数
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={branchData}>
-                  <XAxis
-                    dataKey="name"
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                  />
-                  <YAxis />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
