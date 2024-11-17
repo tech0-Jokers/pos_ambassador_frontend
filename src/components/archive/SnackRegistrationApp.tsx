@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -97,18 +98,15 @@ export default function SnackRegistrationApp() {
                   >
                     買ってきたお菓子を登録する
                   </Button>
-                  <Button
-                    variant="gray"
-                    className="w-full h-16 text-xl justify-start px-6"
-                  >
-                    みんなとチャットする
-                  </Button>
-                  <Button
-                    variant="gray"
-                    className="w-full h-16 text-xl justify-start px-6"
-                  >
-                    管理画面をみる
-                  </Button>
+
+                  <Link href="/dashboard" passHref>
+                    <Button
+                      variant="gray"
+                      className="w-full h-16 text-xl justify-start px-6"
+                    >
+                      管理画面をみる
+                    </Button>
+                  </Link>
                 </CardContent>
               </>
             );

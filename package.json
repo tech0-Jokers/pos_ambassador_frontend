@@ -19,13 +19,14 @@
     "quagga": "^0.6.16",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^2.13.3",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/next-auth": "^3.13.0",
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "18.3.12",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",
     "eslint": "^8",
@@ -33,6 +34,6 @@
     "postcss": "^8.4.47",
     "shadcn-ui": "^0.2.3",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5"
+    "typescript": "5.6.3"
   }
 }
