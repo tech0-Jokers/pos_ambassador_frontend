@@ -117,8 +117,17 @@ export default function DbSnackRegistration({
   const handleRegister = (snack: ApiSnack) => {
     console.log("Registered snack object:", snack);
     console.log("Registered snack name:", snack.product_name);
-    setCurrentSnack(snack.product_name);
-    returnToCase1();
+
+    // snack データを currentSnack にセット
+    setCurrentSnack({
+      product_name: snack.product_name,
+      product_id: snack.product_id, // ApiSnack の product_id を利用
+    });
+
+    // 遷移を遅らせて、state の反映を確実にする
+    setTimeout(() => {
+      returnToCase1();
+    }, 200); // 適宜調整
   };
 
   // JSX

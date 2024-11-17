@@ -27,14 +27,23 @@ type Snack = {
 export default function RegistrationApp() {
   const router = useRouter(); // ルーターを初期化
   const { data: session } = useSession();
-  const { snacks, setSnacks, currentSnack, setCurrentSnack, snacksData } =
-    useRegistration() as {
-      snacks: Snack[];
-      setSnacks: React.Dispatch<React.SetStateAction<Snack[]>>;
-      currentSnack: string;
-      setCurrentSnack: React.Dispatch<React.SetStateAction<string>>;
-      snacksData: Snack[];
-    };
+  const {
+    snacks,
+    setSnacks,
+    currentSnack,
+    setCurrentSnack,
+    snacksData,
+    setSnacksData,
+  } = useRegistration() as {
+    snacks: Snack[];
+    setSnacks: React.Dispatch<React.SetStateAction<Snack[]>>;
+    currentSnack: { product_name: string; product_id: number }; // 修正
+    setCurrentSnack: React.Dispatch<
+      React.SetStateAction<{ product_name: string; product_id: number }>
+    >; // 修正
+    snacksData: Snack[];
+    setSnacksData: React.Dispatch<React.SetStateAction<Snack[]>>;
+  };
 
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
@@ -46,8 +55,12 @@ export default function RegistrationApp() {
 
   // 商品を追加する関数
   const addItem = () => {
+    console.log("currentSnack:", currentSnack);
+    console.log("snacksData:", snacksData); // snacksDataの中身を確認
+
     if (currentSnack && incoming_quantity > 0) {
-      const product_id = getProductIdByName(currentSnack); // 商品IDを取得
+      const product_id = getProductIdByName(currentSnack.product_name); // 商品IDを取得
+      console.log("product_id:", product_id); // product_idの値を確認
       if (product_id === -1) {
         alert("無効な商品です。");
         return;
@@ -55,10 +68,17 @@ export default function RegistrationApp() {
 
       setSnacks([
         ...snacks,
-        { product_id, product_name: currentSnack, incoming_quantity },
+        {
+          product_id,
+          product_name: currentSnack.product_name,
+          incoming_quantity,
+        },
       ]);
-      setCurrentSnack(""); // 初期化
+
       setIncomingQuantity(0); // 初期化
+
+      // currentSnackをリセットする
+      setCurrentSnack({ product_name: "", product_id: -1 });
     }
   };
 
@@ -97,6 +117,25 @@ export default function RegistrationApp() {
       );
 
       if (response.ok) {
+        const responseData = await response.json(); // APIから返されるレスポンスを取得
+        console.log("Response data from API:", responseData); // APIからのレスポンスを確認
+
+        // snacksDataに新しい商品を追加
+        if (responseData.product_id && responseData.product_name) {
+          setSnacksData((prevSnacksData) => {
+            const updatedSnacksData = [
+              ...prevSnacksData,
+              {
+                product_id: responseData.product_id, // 新しく登録された商品ID
+                product_name: responseData.product_name, // 新しく登録された商品名
+                incoming_quantity: 0, // 初期値を設定
+              },
+            ];
+            console.log("Updated snacksData:", updatedSnacksData); // 更新されたsnacksDataを確認
+            return updatedSnacksData;
+          });
+        }
+
         alert("登録完了！");
         setCurrentView("main");
         setStep(0);
@@ -221,9 +260,7 @@ export default function RegistrationApp() {
                       登録するお菓子（個数を入力してください）:
                     </p>
                     <Input
-                      value={
-                        typeof currentSnack === "string" ? currentSnack : ""
-                      }
+                      value={currentSnack.product_name} // product_nameを指定
                       placeholder="お菓子の名前"
                       readOnly
                       className="text-xl h-16 px-6 w-full mb-2"
