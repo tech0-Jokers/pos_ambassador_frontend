@@ -12,8 +12,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import BarcodeScanner from "@/components/archive/BarcodeScanner"; // スキャナをインポート
+import { useRouter } from "next/navigation";
 
 export default function SnackRegistrationApp() {
+  const router = useRouter(); // ルーターを初期化
   const [step, setStep] = useState(0);
   const [price, setPrice] = useState<number>(0); // priceは数値として扱う
   const [itemName, setItemName] = useState(""); // 品名手動入力用
@@ -99,14 +101,13 @@ export default function SnackRegistrationApp() {
                     買ってきたお菓子を登録する
                   </Button>
 
-                  <Link href="/dashboard" passHref>
-                    <Button
-                      variant="gray"
-                      className="w-full h-16 text-xl justify-start px-6"
-                    >
-                      管理画面をみる
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="gray"
+                    className="w-full h-16 text-xl justify-start px-6"
+                    onClick={() => router.push("/dashboard")}
+                  >
+                    管理画面をみる
+                  </Button>
                 </CardContent>
               </>
             );
