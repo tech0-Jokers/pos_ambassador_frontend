@@ -162,6 +162,7 @@ export default function DbSnackRegistration({
                   width={160}
                   height={160}
                   className="mt-2 w-40 h-40 object-cover rounded-md"
+                  unoptimized // 画像最適化を無効化
                 />
               </CardContent>
               <CardFooter className="mt-auto">
