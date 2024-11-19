@@ -37,11 +37,11 @@ const initialBranchData = [
 ];
 
 // メッセージ数を取得するための関数（APIを呼び出す）
-const fetchMessageCount = async () => {
+const fetchMessageCount = async (organization_id) => {
   try {
     // 環境変数を利用してAPIエンドポイントを指定
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/messages/count/?organization_id=1`
+      `${process.env.NEXT_PUBLIC_API_URL}/messages/count/?organization_id=${organization_id}`
     );
 
     // レスポンスが正常でない場合はエラーをスロー
@@ -64,7 +64,8 @@ const fetchMessageCount = async () => {
 export default function Component() {
   // 状態管理（ステート）を設定
   const [selectedMonth, setSelectedMonth] = useState("2023年4月"); // 現在選択されている月
-  const [messageCount, setMessageCount] = useState(0); // メッセージ数
+  const [messageCount1, setMessageCount1] = useState(0); // メッセージ数
+  const [messageCount2, setMessageCount2] = useState(0); // メッセージ数
   const [totalUsers, setTotalUsers] = useState(0); // ユーザー総数
   const [frequencyData, setFrequencyData] = useState(initialFrequencyData); // 利用頻度データ
   const [ageData, setAgeData] = useState(initialAgeData); // 年代別データ
@@ -80,10 +81,12 @@ export default function Component() {
         setError(null); // エラー状態をリセット
 
         // メッセージ数を取得
-        const messages = await fetchMessageCount();
+        const messages1 = await fetchMessageCount(1);
+        const messages2 = await fetchMessageCount(2);
 
         // 他のモックデータを更新
-        setMessageCount(messages);
+        setMessageCount1(messages1);
+        setMessageCount2(messages2);
         setTotalUsers(370); // 仮のユーザー総数
         setFrequencyData(initialFrequencyData);
         setAgeData(initialAgeData);
@@ -176,15 +179,19 @@ export default function Component() {
             </CardHeader>
             <CardContent>
               <div>
-                <div className="text-sm text-gray-600">メッセージ数</div>
+                <div className="text-sm text-gray-600">
+                  組織IDが1のメッセージ数
+                </div>
                 <div className="text-4xl font-bold text-purple-900">
-                  {messageCount}
+                  {messageCount1}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">総利用人数</div>
+                <div className="text-sm text-gray-600">
+                  組織IDが2のメッセージ数
+                </div>
                 <div className="text-4xl font-bold text-purple-900">
-                  {totalUsers} 数
+                  {messageCount2}
                 </div>
               </div>
             </CardContent>
