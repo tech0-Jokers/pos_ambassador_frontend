@@ -138,6 +138,12 @@ export default function Component() {
           <h1 className="text-2xl font-bold text-purple-900">
             テクワン株式会社
           </h1>
+          <button
+            onClick={() => (window.location.href = "/")}
+            className="px-4 py-2 bg-purple-900 text-white rounded hover:bg-purple-700"
+          >
+            ホームに戻る
+          </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">管理者A</span>
           </div>
