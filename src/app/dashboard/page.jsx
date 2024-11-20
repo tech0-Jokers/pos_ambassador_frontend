@@ -41,7 +41,7 @@ const fetchMessageCount = async (organization_id) => {
   try {
     // 環境変数を利用してAPIエンドポイントを指定
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/messages/count/?organization_id=${organization_id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/send_messages/count/?organization_id=${organization_id}`
     );
 
     // レスポンスが正常でない場合はエラーをスロー
@@ -180,7 +180,7 @@ export default function Component() {
             <CardContent>
               <div>
                 <div className="text-sm text-gray-600">
-                  組織IDが1のメッセージ数
+                  組織IDが1の送信メッセージ数
                 </div>
                 <div className="text-4xl font-bold text-purple-900">
                   {messageCount1}
@@ -188,7 +188,7 @@ export default function Component() {
               </div>
               <div>
                 <div className="text-sm text-gray-600">
-                  組織IDが2のメッセージ数
+                  組織IDが2の送信メッセージ数
                 </div>
                 <div className="text-4xl font-bold text-purple-900">
                   {messageCount2}
