@@ -4,13 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { userMap } from "@/utils/userMap";
 
@@ -20,10 +14,6 @@ type Snack = {
   product_explanation: string | null;
   product_image_url: string | null;
   stock_quantity: number; // 在庫数
-};
-
-type ApiResponse = {
-  products: Snack[];
 };
 
 export default function SnackStock({
