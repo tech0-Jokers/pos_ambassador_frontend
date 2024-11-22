@@ -14,6 +14,7 @@ type Snack = {
   product_explanation: string | null;
   product_image_url: string | null;
   stock_quantity: number; // 在庫数
+  sales_amount: number; // 値段
 };
 
 export default function SnackStock({
@@ -24,6 +25,9 @@ export default function SnackStock({
   const { data: session } = useSession(); // セッション情報を取得
   const [snackName, setSnackName] = useState<string>(""); // 検索入力
   const [snacks, setSnacks] = useState<Snack[]>([]); // 在庫情報
+  const [updatedPrices, setUpdatedPrices] = useState<{
+    [product_id: number]: number;
+  }>({});
   const [loading, setLoading] = useState<boolean>(true); // ローディング状態
 
   // セッション情報から`organization_id`を取得
@@ -57,7 +61,44 @@ export default function SnackStock({
     };
 
     fetchStockData();
-  }, [organization_id, session]); // ここで依存配列に session を追加
+  }, [organization_id]);
+
+  // 値段変更リクエスト
+  const handlePriceSubmit = async (product_id: number) => {
+    const newPrice = updatedPrices[product_id];
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/update_price/${organization_id}/${product_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sales_amount: newPrice }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("値段変更に失敗しました");
+      }
+
+      console.log("値段変更成功:", { organization_id, product_id, newPrice });
+      // ローカルデータ更新
+      setSnacks((prev) =>
+        prev.map((snack) =>
+          snack.product_id === product_id
+            ? { ...snack, sales_amount: newPrice }
+            : snack
+        )
+      );
+      // 変更後の記録を削除
+      setUpdatedPrices((prev) => {
+        const updated = { ...prev };
+        delete updated[product_id];
+        return updated;
+      });
+    } catch (error) {
+      console.error("値段変更エラー:", error);
+    }
+  };
 
   // フィルタリング（検索）
   const filteredSnacks = snackName.trim()
@@ -114,6 +155,27 @@ export default function SnackStock({
                     <p className="mt-4 text-lg font-semibold">
                       在庫数: {snack.stock_quantity}個
                     </p>
+                    <p className="mt-4 text-lg font-semibold">
+                      現在の値段: ¥{snack.sales_amount}
+                    </p>
+                    <Input
+                      type="number"
+                      placeholder="新しい値段を入力"
+                      className="mb-2"
+                      value={updatedPrices[snack.product_id] || ""}
+                      onChange={(e) =>
+                        setUpdatedPrices({
+                          ...updatedPrices,
+                          [snack.product_id]: Number(e.target.value),
+                        })
+                      }
+                    />
+                    <Button
+                      onClick={() => handlePriceSubmit(snack.product_id)}
+                      className="bg-purple-700 text-white hover:bg-purple-800 mt-2"
+                    >
+                      値段変更確定
+                    </Button>
                   </CardContent>
                 </Card>
               ))
