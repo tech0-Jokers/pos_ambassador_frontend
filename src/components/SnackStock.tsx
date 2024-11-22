@@ -57,18 +57,17 @@ export default function SnackStock({
           throw new Error("在庫データの取得に失敗しました");
         }
         const data: Snack[] = await response.json();
-        console.log("取得したデータ:", data);
-        setSnacks(data || []); // データが存在しない場合は空配列を設定
+        setSnacks(data || []);
       } catch (error) {
         console.error("在庫データ取得エラー:", error);
-        setSnacks([]); // エラー時も空配列を設定
+        setSnacks([]);
       } finally {
-        setLoading(false); // ローディング状態解除
+        setLoading(false);
       }
     };
 
     fetchStockData();
-  }, [organization_id]);
+  }, [organization_id, session]); // ここで依存配列に session を追加
 
   // フィルタリング（検索）
   const filteredSnacks = snackName.trim()
