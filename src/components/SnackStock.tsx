@@ -68,7 +68,7 @@ export default function SnackStock({
     const newPrice = updatedPrices[product_id];
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/update_price/${organization_id}/${product_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory_products/${organization_id}/update_price/${product_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
