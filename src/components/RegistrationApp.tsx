@@ -17,6 +17,7 @@ import { useRegistration } from "@/context/RegistrationContext";
 import DbSnackRegistration from "@/components/DbSnackRegistration";
 import NewSnackRegistration from "@/components/NewSnackRegistration";
 import SnackStock from "@/components/SnackStock";
+import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 // Snack型を修正
 type Snack = {
@@ -173,6 +174,13 @@ export default function RegistrationApp() {
           onClick={() => setCurrentView("snackStock")} // 新しいビューを指定
         >
           在庫情報
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full h-16 text-xl justify-start px-6"
+          onClick={() => setCurrentView("qrCodeGenerator")} // 新しいビューを設定
+        >
+          QRコード
         </Button>
         <Button
           variant="outline"
@@ -388,6 +396,9 @@ export default function RegistrationApp() {
           renderSnackRegistration()}
         {subView === "none" && currentView === "snackStock" && (
           <SnackStock returnToMain={() => setCurrentView("main")} />
+        )}
+        {subView === "none" && currentView === "qrCodeGenerator" && (
+          <QRCodeGenerator returnToMain={() => setCurrentView("main")} />
         )}
         {subView === "dbSnackRegistration" && renderDbSnackRegistration()}
         {subView === "newSnackRegistration" && renderNewSnackRegistration()}
