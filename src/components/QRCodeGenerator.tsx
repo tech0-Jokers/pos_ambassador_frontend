@@ -1,98 +1,85 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react"; // セッション情報を取得
+import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { userMap } from "@/utils/userMap"; // ユーザー情報マッピング
+import { userMap } from "@/utils/userMap";
+import QRCode from "qrcode";
 
 export default function QRCodeGenerator({
   returnToMain,
 }: {
   returnToMain: () => void;
 }) {
-  const { data: session } = useSession(); // セッション情報
-  const userData = session?.user?.name ? userMap[session.user.name] : null; // ユーザー情報をマップ
-  const organization_id = userData?.organization_id || null; // セッションからorganization_idを取得
+  const { data: session, status } = useSession();
 
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null); // QRコード画像URL
-  const [loading, setLoading] = useState<boolean>(false); // ローディング状態
-  const [fetching, setFetching] = useState<boolean>(true); // 初回フェッチ状態
+  // デバッグログ
+  console.log("QRCodeGeneratorがレンダリングされました");
+  console.log("useSession status:", status);
+  console.log("useSession session:", session);
 
-  // QRコードを取得する
-  useEffect(() => {
-    const fetchQRCode = async () => {
-      setFetching(true);
-      try {
-        if (!organization_id) {
-          throw new Error("組織IDが不明です");
-        }
+  if (status === "loading") {
+    console.log("セッション確認中...");
+    return <p>セッションを確認中...</p>;
+  }
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/get_qr/${organization_id}`
-        );
+  const userData = session?.user?.name ? userMap[session.user.name] : null;
+  const organization_id =
+    session === null ? 1 : userData?.organization_id ?? 404;
 
-        if (!response.ok) {
-          throw new Error("QRコードの取得に失敗しました");
-        }
+  console.log("ユーザー名:", session?.user?.name);
+  console.log("ユーザーデータ:", userData);
+  console.log("組織ID:", organization_id);
 
-        const { qrCodeUrl } = await response.json(); // サーバーからQRコードURLを取得
-        setQrCodeUrl(qrCodeUrl); // QRコードURLをステートに保存
-      } catch (error) {
-        console.error("初回QRコード取得エラー:", error);
-        setQrCodeUrl(null); // エラー時はQRコードを非表示
-      } finally {
-        setFetching(false); // 初回フェッチ終了
-      }
-    };
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-    if (organization_id) {
-      fetchQRCode(); // organization_idがある場合にのみデータ取得
-    }
-  }, [organization_id]);
-
-  // QRコードを新規生成する
   const generateQRCode = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      if (!organization_id) {
-        throw new Error("組織IDが不明のため、QRコードを生成できません");
+      if (organization_id === 1) {
+        throw new Error("ログインが必要です。");
       }
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/generate_qr`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ organization_id }), // organization_idを送信
-        }
+      if (organization_id === 404) {
+        throw new Error(
+          "組織IDが見つかりません。サポートにお問い合わせください。"
+        );
+      }
+
+      const tokenResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/get_token/${organization_id}`
       );
-
-      if (!response.ok) {
-        throw new Error("QRコードの生成に失敗しました");
+      if (!tokenResponse.ok) {
+        throw new Error("トークンの取得に失敗しました");
       }
+      const { token } = await tokenResponse.json();
 
-      const { qrCodeUrl } = await response.json(); // 新しいQRコードURLを取得
-      setQrCodeUrl(qrCodeUrl); // 新しいQRコードをステートに保存
-    } catch (error) {
-      console.error("QRコード生成エラー:", error);
-      setQrCodeUrl(null); // エラー時はQRコードを非表示
+      const qrData = `https://example.com/api/products/${organization_id}&token=${token}`;
+      const generatedQRCode = await QRCode.toDataURL(qrData);
+      setQrCodeImage(generatedQRCode);
+    } catch (err: any) {
+      console.error("QRコード生成エラー:", err);
+      setError(err.message || "エラーが発生しました");
     } finally {
-      setLoading(false); // ローディング状態解除
+      setLoading(false);
     }
   };
 
   return (
     <div className="container mx-auto p-4 text-center">
       <h1 className="text-2xl font-bold mb-4">QRコード</h1>
-
-      {/* QRコード画像表示エリア */}
       <div className="mb-4">
-        {fetching ? (
+        {loading ? (
           <p className="text-gray-500">読み込み中...</p>
-        ) : qrCodeUrl ? (
-          <Image
-            src={qrCodeUrl}
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : qrCodeImage ? (
+          <img
+            src={qrCodeImage}
             alt="QRコード"
             width={200}
             height={200}
@@ -102,17 +89,13 @@ export default function QRCodeGenerator({
           <p className="text-gray-500">QRコードはまだ生成されていません</p>
         )}
       </div>
-
-      {/* QRコード発行ボタン */}
       <Button
         onClick={generateQRCode}
         className="bg-purple-700 text-white hover:bg-purple-800 mb-4 mr-2"
-        disabled={loading} // ローディング中は無効化
+        disabled={loading}
       >
         {loading ? "生成中..." : "QRコードを新たに発行"}
       </Button>
-
-      {/* ホームに戻るボタン */}
       <Button
         onClick={returnToMain}
         className="mt-4 bg-purple-700 text-white hover:bg-purple-800 ml-2"
