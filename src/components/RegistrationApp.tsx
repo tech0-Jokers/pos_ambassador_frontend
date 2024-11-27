@@ -192,9 +192,9 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => router.push("/snack-registration")}
+          onClick={() => router.push("/management-selection")}
         >
-          開発中（お菓子登録機能）
+          開発中
         </Button>
       </CardContent>
     </Card>
