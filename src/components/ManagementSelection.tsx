@@ -19,7 +19,7 @@ export default function ManagementSelection() {
       <Button
         variant="outline"
         className="w-64 text-lg"
-        onClick={() => alert("他の開発中ページに移動します")}
+        onClick={() => router.push("/github-test")}
       >
         Github_idテストのページ
       </Button>
