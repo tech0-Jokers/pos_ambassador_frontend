@@ -3,6 +3,11 @@
 import React, { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
+type OrganizationResponse = {
+  organization_id: number;
+  detail?: string;
+};
+
 export default function GithubTestPage() {
   const { data: session } = useSession(); // Github認証情報を取得
   const [githubId, setGithubId] = useState<string | null>(null);
@@ -19,19 +24,17 @@ export default function GithubTestPage() {
       return;
     }
 
-    // Github IDとユーザー名を取得
     const githubId = session.user.id;
     const githubUsername = session.user.name;
 
     try {
-      // GETリクエストを送信
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/organization/${githubId}?github_username=${githubUsername}`
       );
-      const data = await response.json();
+
+      const data: OrganizationResponse = await response.json();
 
       if (response.ok) {
-        // データを状態にセット
         setGithubId(githubId);
         setGithubUsername(githubUsername);
         setOrganizationId(data.organization_id);
@@ -40,9 +43,10 @@ export default function GithubTestPage() {
         setError(data.detail || "エラーが発生しました");
         setGithubId(githubId);
         setGithubUsername(githubUsername);
-        setOrganizationId(404); // 組織IDが見つからない場合
+        setOrganizationId(404);
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error("通信エラーが発生しました", err);
       setError("通信エラーが発生しました");
       setGithubId(null);
       setGithubUsername(null);

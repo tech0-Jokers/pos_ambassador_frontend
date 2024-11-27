@@ -102,7 +102,7 @@ export default function DbSnackRegistration({
     };
 
     fetchSnacks();
-  }, [sampleSnacks, setSnacksData]);
+  }, [session, sampleSnacks, setSnacksData]);
 
   // 検索機能
   const filteredSnacks = snackName.trim()

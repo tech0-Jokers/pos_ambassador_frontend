@@ -1,4 +1,6 @@
 declare module "qrcode" {
-  const content: any;
-  export default content;
+  export function toDataURL(
+    text: string,
+    options?: Record<string, unknown>
+  ): Promise<string>;
 }
