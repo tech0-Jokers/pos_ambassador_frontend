@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { userMap } from "@/utils/userMap";
+import Image from "next/image";
 import QRCode from "qrcode";
 
 export default function QRCodeGenerator({
@@ -13,33 +14,23 @@ export default function QRCodeGenerator({
 }) {
   const { data: session, status } = useSession();
 
-  // デバッグログ
-  console.log("QRCodeGeneratorがレンダリングされました");
-  console.log("useSession status:", status);
-  console.log("useSession session:", session);
-
-  if (status === "loading") {
-    console.log("セッション確認中...");
-    return <p>セッションを確認中...</p>;
-  }
-
-  const userData = session?.user?.name ? userMap[session.user.name] : null;
-  const organization_id =
-    session === null ? 1 : userData?.organization_id ?? 404;
-
-  console.log("ユーザー名:", session?.user?.name);
-  console.log("ユーザーデータ:", userData);
-  console.log("組織ID:", organization_id);
-
+  // 状態管理（Hooksを最初に定義）
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ユーザーデータ取得
+  const userData = session?.user?.name ? userMap[session.user.name] : null;
+  const organization_id =
+    session === null ? 1 : userData?.organization_id ?? 404;
+
+  // QRコード生成関数
   const generateQRCode = async () => {
     setLoading(true);
     setError(null);
 
     try {
+      // 必要条件を事前に確認
       if (organization_id === 1) {
         throw new Error("ログインが必要です。");
       }
@@ -50,6 +41,7 @@ export default function QRCodeGenerator({
         );
       }
 
+      // トークン取得リクエスト
       const tokenResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/get_token/${organization_id}`
       );
@@ -58,16 +50,22 @@ export default function QRCodeGenerator({
       }
       const { token } = await tokenResponse.json();
 
+      // QRコードデータ生成
       const qrData = `https://tech0-gen-7-step4-studentwebapp-pos-37-bxbfgkg5a7gwa7e9.eastus-01.azurewebsites.net/api/products/${organization_id}&token=${token}`;
       const generatedQRCode = await QRCode.toDataURL(qrData);
       setQrCodeImage(generatedQRCode);
-    } catch (err: any) {
+    } catch (err) {
       console.error("QRコード生成エラー:", err);
-      setError(err.message || "エラーが発生しました");
+      setError((err as Error).message || "エラーが発生しました");
     } finally {
       setLoading(false);
     }
   };
+
+  // ロード中やエラー処理
+  if (status === "loading") {
+    return <p>セッションを確認中...</p>;
+  }
 
   return (
     <div className="container mx-auto p-4 text-center">
@@ -78,7 +76,8 @@ export default function QRCodeGenerator({
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : qrCodeImage ? (
-          <img
+          // next/image を使用
+          <Image
             src={qrCodeImage}
             alt="QRコード"
             width={200}
