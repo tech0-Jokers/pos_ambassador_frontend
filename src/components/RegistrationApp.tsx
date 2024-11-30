@@ -16,6 +16,8 @@ import {
 import { useRegistration } from "@/context/RegistrationContext";
 import DbSnackRegistration from "@/components/DbSnackRegistration";
 import NewSnackRegistration from "@/components/NewSnackRegistration";
+import SnackStock from "@/components/SnackStock";
+import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 // Snack型を修正
 type Snack = {
@@ -169,9 +171,16 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => alert("お菓子購入機能は準備中です")}
+          onClick={() => setCurrentView("snackStock")} // 新しいビューを指定
         >
-          お菓子購入
+          在庫情報
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full h-16 text-xl justify-start px-6"
+          onClick={() => setCurrentView("qrCodeGenerator")} // 新しいビューを設定
+        >
+          QRコード
         </Button>
         <Button
           variant="outline"
@@ -183,9 +192,9 @@ export default function RegistrationApp() {
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => router.push("/snack-registration")}
+          onClick={() => router.push("/management-selection")}
         >
-          開発中の機能
+          開発中
         </Button>
       </CardContent>
     </Card>
@@ -385,6 +394,12 @@ export default function RegistrationApp() {
         {subView === "none" &&
           currentView === "snackRegistration" &&
           renderSnackRegistration()}
+        {subView === "none" && currentView === "snackStock" && (
+          <SnackStock returnToMain={() => setCurrentView("main")} />
+        )}
+        {subView === "none" && currentView === "qrCodeGenerator" && (
+          <QRCodeGenerator returnToMain={() => setCurrentView("main")} />
+        )}
         {subView === "dbSnackRegistration" && renderDbSnackRegistration()}
         {subView === "newSnackRegistration" && renderNewSnackRegistration()}
       </div>
