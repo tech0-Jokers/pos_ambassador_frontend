@@ -66,7 +66,6 @@ export default function Component() {
   const [selectedMonth, setSelectedMonth] = useState("2023年4月"); // 現在選択されている月
   const [messageCount1, setMessageCount1] = useState(0); // メッセージ数
   const [messageCount2, setMessageCount2] = useState(0); // メッセージ数
-  const [totalUsers, setTotalUsers] = useState(0); // ユーザー総数
   const [frequencyData, setFrequencyData] = useState(initialFrequencyData); // 利用頻度データ
   const [ageData, setAgeData] = useState(initialAgeData); // 年代別データ
   const [branchData, setBranchData] = useState(initialBranchData); // 支社別データ
@@ -87,7 +86,6 @@ export default function Component() {
         // 他のモックデータを更新
         setMessageCount1(messages1);
         setMessageCount2(messages2);
-        setTotalUsers(370); // 仮のユーザー総数
         setFrequencyData(initialFrequencyData);
         setAgeData(initialAgeData);
         setBranchData(initialBranchData);

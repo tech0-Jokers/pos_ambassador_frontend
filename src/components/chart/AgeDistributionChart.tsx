@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   Cell,
+  TooltipProps,
 } from "recharts";
 import { ChartContainer } from "@/components/ui/ChartContainer";
 import { ChartTooltipContent } from "@/components/ui/ChartTooltipContent";
@@ -20,13 +21,18 @@ interface AgeDistributionChartProps {
   ageData: AgeData[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// RechartsのTooltipPropsを使用して型定義を追加
+const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
     return (
       <ChartTooltipContent
-        payload={payload.map((item: any) => ({
-          name: item.age,
-          value: item.value,
+        payload={payload.map((item) => ({
+          name: item.payload.age, // payloadの正確なプロパティを指定
+          value: item.payload.percentage,
         }))}
         label={label}
       />

@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   Cell,
+  TooltipProps,
 } from "recharts";
 import { ChartContainer } from "@/components/ui/ChartContainer";
 import { ChartTooltipContent } from "@/components/ui/ChartTooltipContent";
@@ -20,13 +21,18 @@ interface BranchUsageChartProps {
   branchData: BranchData[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// RechartsのTooltipPropsを使用して型を明確にする
+const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
     return (
       <ChartTooltipContent
-        payload={payload.map((item: any) => ({
-          name: item.name,
-          value: item.value,
+        payload={payload.map((item) => ({
+          name: item.payload.name, // payloadの型を正確に指定
+          value: item.payload.value,
         }))}
         label={label}
       />
