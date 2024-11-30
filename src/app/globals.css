@@ -22,3 +22,23 @@
   max-width: 600px;
   margin: auto;
 }
+
+/* styles.css */
+.no-background {
+  background: none !important; /* すべての背景スタイルをリセット */
+  background-color: white !important; /* 背景色を白に変更 */
+}
+
+/* styles.css */
+:root {
+  --chart-1: 240, 100%, 50%; /* 青 */
+  --chart-2: 120, 100%, 50%; /* 緑 */
+  --chart-3: 60, 100%, 50%; /* 黄 */
+  --chart-4: 0, 100%, 50%; /* 赤 */
+  --chart-5: 300, 100%, 50%; /* 紫 */
+  --chart-6: 180, 100%, 50%; /* シアン */
+  --chart-7: 30, 100%, 50%; /* オレンジ */
+  --chart-8: 270, 100%, 50%; /* マゼンタ */
+  --chart-9: 90, 100%, 50%; /* ライム */
+  --chart-10: 210, 100%, 50%; /* インディゴ */
+}
