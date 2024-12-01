@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { userMap } from "@/utils/userMap";
 import Image from "next/image";
 import QRCode from "qrcode";
+import jsPDF from "jspdf";
 
 export default function QRCodeGenerator({
   returnToMain,
@@ -14,23 +15,20 @@ export default function QRCodeGenerator({
 }) {
   const { data: session, status } = useSession();
 
-  // 状態管理（Hooksを最初に定義）
+  // 状態管理
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ユーザーデータ取得
   const userData = session?.user?.name ? userMap[session.user.name] : null;
   const organization_id =
     session === null ? 1 : userData?.organization_id ?? 404;
 
-  // QRコード生成関数
   const generateQRCode = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // 必要条件を事前に確認
       if (organization_id === 1) {
         throw new Error("ログインが必要です。");
       }
@@ -41,7 +39,6 @@ export default function QRCodeGenerator({
         );
       }
 
-      // トークン取得リクエスト
       const tokenResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/get_token/${organization_id}`
       );
@@ -50,8 +47,7 @@ export default function QRCodeGenerator({
       }
       const { token } = await tokenResponse.json();
 
-      // QRコードデータ生成
-      const qrData = `https://tech0-gen-7-step4-studentwebapp-pos-37-bxbfgkg5a7gwa7e9.eastus-01.azurewebsites.net/${organization_id}&token=${token}`;
+      const qrData = `https://tech0-gen-7-step4-studentwebapp-pos-37-bxbfgkg5a7gwa7e9.eastus-01.azurewebsites.net?${organization_id}&token=${token}`;
       const generatedQRCode = await QRCode.toDataURL(qrData);
       setQrCodeImage(generatedQRCode);
     } catch (err) {
@@ -62,7 +58,15 @@ export default function QRCodeGenerator({
     }
   };
 
-  // ロード中やエラー処理
+  // PDF出力機能
+  const downloadPDF = () => {
+    if (!qrCodeImage) return;
+    const pdf = new jsPDF();
+    pdf.text("QRコード", 10, 10);
+    pdf.addImage(qrCodeImage, "PNG", 10, 20, 50, 50); // 位置とサイズを調整可能
+    pdf.save("QRCode.pdf");
+  };
+
   if (status === "loading") {
     return <p>セッションを確認中...</p>;
   }
@@ -76,7 +80,6 @@ export default function QRCodeGenerator({
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : qrCodeImage ? (
-          // next/image を使用
           <Image
             src={qrCodeImage}
             alt="QRコード"
@@ -95,6 +98,14 @@ export default function QRCodeGenerator({
       >
         {loading ? "生成中..." : "QRコードを新たに発行"}
       </Button>
+      {qrCodeImage && (
+        <Button
+          onClick={downloadPDF}
+          className="bg-blue-700 text-white hover:bg-blue-800 mb-4 ml-2"
+        >
+          QRコードをPDFでダウンロード
+        </Button>
+      )}
       <Button
         onClick={returnToMain}
         className="mt-4 bg-purple-700 text-white hover:bg-purple-800 ml-2"
