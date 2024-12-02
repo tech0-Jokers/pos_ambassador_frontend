@@ -109,11 +109,14 @@ export default function RegistrationApp() {
     };
 
     try {
-      const response = await fetch("/api/receiving_register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/receiving_register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       if (response.ok) {
         const responseData = await response.json(); // APIから返されるレスポンスを取得
