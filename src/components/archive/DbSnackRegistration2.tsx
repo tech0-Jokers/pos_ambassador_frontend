@@ -83,7 +83,7 @@ export default function DbSnackRegistration({
       const organization_id = session ? userData?.organization_id || 404 : 1;
       try {
         const response = await fetch(
-          `/api/snacks?organization_id=${organization_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/snacks/?organization_id=${organization_id}`
         );
 
         if (!response.ok) {
