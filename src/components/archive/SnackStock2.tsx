@@ -13,8 +13,8 @@ type Snack = {
   product_name: string;
   product_explanation: string | null;
   product_image_url: string | null;
-  stock_quantity: number;
-  sales_amount: number;
+  stock_quantity: number; // 在庫数
+  sales_amount: number; // 値段
 };
 
 export default function SnackStock({
@@ -22,17 +22,19 @@ export default function SnackStock({
 }: {
   returnToMain: () => void;
 }) {
-  const { data: session } = useSession();
-  const [snackName, setSnackName] = useState<string>("");
-  const [snacks, setSnacks] = useState<Snack[]>([]);
+  const { data: session } = useSession(); // セッション情報を取得
+  const [snackName, setSnackName] = useState<string>(""); // 検索入力
+  const [snacks, setSnacks] = useState<Snack[]>([]); // 在庫情報
   const [updatedPrices, setUpdatedPrices] = useState<{
     [product_id: number]: number;
   }>({});
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true); // ローディング状態
 
+  // セッション情報から`organization_id`を取得
   const userData = session?.user?.name ? userMap[session.user.name] : null;
-  const organization_id = session ? userData?.organization_id || 404 : 1;
+  const organization_id = session ? userData?.organization_id || 404 : 1; // デフォルト値を設定
 
+  // データ取得
   useEffect(() => {
     if (!organization_id || organization_id === 404) {
       console.error("組織IDが不明です。データを取得できません。");
@@ -42,18 +44,12 @@ export default function SnackStock({
 
     const fetchStockData = async () => {
       try {
-        const response = await fetch("/api/snack-stock", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ organization_id }),
-        });
-
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/inventory_products/${organization_id}`
+        );
         if (!response.ok) {
           throw new Error("在庫データの取得に失敗しました");
         }
-
         const data: Snack[] = await response.json();
         setSnacks(data || []);
       } catch (error) {
@@ -67,23 +63,25 @@ export default function SnackStock({
     fetchStockData();
   }, [organization_id]);
 
+  // 値段変更リクエスト
   const handlePriceSubmit = async (product_id: number) => {
     const newPrice = updatedPrices[product_id];
     try {
-      const response = await fetch("/api/snack-stock/update-price", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          organization_id,
-          product_id,
-          sales_amount: newPrice,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory_products/${organization_id}/update_price/${product_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sales_amount: newPrice }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("値段変更に失敗しました");
       }
 
+      console.log("値段変更成功:", { organization_id, product_id, newPrice });
+      // ローカルデータ更新
       setSnacks((prev) =>
         prev.map((snack) =>
           snack.product_id === product_id
@@ -91,6 +89,7 @@ export default function SnackStock({
             : snack
         )
       );
+      // 変更後の記録を削除
       setUpdatedPrices((prev) => {
         const updated = { ...prev };
         delete updated[product_id];
@@ -101,6 +100,7 @@ export default function SnackStock({
     }
   };
 
+  // フィルタリング（検索）
   const filteredSnacks = snackName.trim()
     ? snacks.filter((snack) =>
         snack.product_name
@@ -128,7 +128,7 @@ export default function SnackStock({
             className="mb-4 w-full p-2 border border-gray-300 rounded"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredSnacks.length > 0 ? (
+            {filteredSnacks && filteredSnacks.length > 0 ? (
               filteredSnacks.map((snack) => (
                 <Card
                   key={snack.product_id}
@@ -140,9 +140,7 @@ export default function SnackStock({
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col items-center justify-center text-center pb-6">
-                    <p className="text-gray-600">
-                      {snack.product_explanation || "説明なし"}
-                    </p>
+                    <p>{snack.product_explanation || "説明なし"}</p>
                     <Image
                       src={
                         snack.product_image_url ||
@@ -154,16 +152,16 @@ export default function SnackStock({
                       className="mt-2 w-40 h-40 object-cover rounded-md"
                       unoptimized
                     />
-                    <p className="mt-4 text-lg font-semibold text-gray-700">
+                    <p className="mt-4 text-lg font-semibold">
                       在庫数: {snack.stock_quantity}個
                     </p>
-                    <p className="mt-2 text-lg font-semibold text-gray-700">
+                    <p className="mt-4 text-lg font-semibold">
                       現在の値段: ¥{snack.sales_amount}
                     </p>
                     <Input
                       type="number"
                       placeholder="新しい値段を入力"
-                      className="mt-2 p-2 border border-gray-300 rounded w-full"
+                      className="mb-2"
                       value={updatedPrices[snack.product_id] || ""}
                       onChange={(e) =>
                         setUpdatedPrices({
@@ -174,7 +172,7 @@ export default function SnackStock({
                     />
                     <Button
                       onClick={() => handlePriceSubmit(snack.product_id)}
-                      className="bg-purple-700 text-white hover:bg-purple-800 mt-4"
+                      className="bg-purple-700 text-white hover:bg-purple-800 mt-2"
                     >
                       値段変更確定
                     </Button>
