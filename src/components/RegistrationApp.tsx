@@ -166,28 +166,28 @@ export default function RegistrationApp() {
           className="w-full h-16 text-xl justify-start px-6"
           onClick={() => setCurrentView("snackRegistration")}
         >
-          お菓子入庫
+          お菓子を並べる
         </Button>
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
           onClick={() => setCurrentView("snackStock")} // 新しいビューを指定
         >
-          在庫情報
+          お菓子に値段をつける
         </Button>
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
           onClick={() => setCurrentView("qrCodeGenerator")} // 新しいビューを設定
         >
-          QRコード
+          QRコードを生成する
         </Button>
         <Button
           variant="outline"
           className="w-full h-16 text-xl justify-start px-6"
-          onClick={() => alert("管理画面は準備中です")}
+          onClick={() => router.push("/dashboard")} // 修正: ダッシュボードに遷移
         >
-          管理画面
+          ダッシュボードを見る
         </Button>
         <Button
           variant="outline"
