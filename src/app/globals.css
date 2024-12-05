@@ -42,3 +42,36 @@
   --chart-9: 90, 100%, 50%; /* ライム */
   --chart-10: 210, 100%, 50%; /* インディゴ */
 }
+
+/* タブレットサイズ用の調整 */
+@media (max-width: 1024px) {
+  /* 全体のフォントサイズを縮小 */
+  html {
+    font-size: 90%; /* 基本フォントサイズを縮小 */
+  }
+
+  .bg-snack {
+    background-size: cover; /* 背景を全体にフィット */
+    background-position: center; /* 中央寄せ */
+  }
+
+  .text-xl {
+    font-size: 0.875rem; /* テキストサイズを調整 */
+  }
+
+  .lg\:text-3xl {
+    font-size: 1.25rem; /* タイトルの文字サイズを縮小 */
+  }
+
+  /* ボタンの調整 */
+  button {
+    font-size: 0.75rem; /* ボタン内のテキストサイズを縮小 */
+    padding: 8px 12px; /* ボタンの余白を調整 */
+  }
+
+  /* コンテナ幅の調整 */
+  .transparent-container {
+    max-width: 90%; /* 幅を画面に合わせる */
+    padding: 24px; /* パディングを減らす */
+  }
+}

@@ -23,7 +23,12 @@ export default function LoginStatus() {
       ) : (
         <>
           <p>ログインしていません。</p>
-          <button onClick={() => signIn()}>ログイン</button>
+          <button
+            className="text-sm md:text-sm lg:text-base leading-tight"
+            onClick={() => signIn()}
+          >
+            ログイン
+          </button>
         </>
       )}
     </div>

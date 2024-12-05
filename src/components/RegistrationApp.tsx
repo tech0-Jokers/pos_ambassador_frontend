@@ -153,42 +153,42 @@ export default function RegistrationApp() {
   const renderMainView = () => (
     <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg transparent-container">
       <CardHeader>
-        <CardTitle className="text-center text-3xl">
+        <CardTitle className="text-xl md:text-xl lg:text-3xl">
           やあ、アンバサダー！今回は何する？
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Button
           variant="outline"
-          className="w-full h-16 text-xl justify-start px-6"
+          className="w-full h-16 text-xl md:text-lg lg:text-xl justify-start px-6 md:px-4"
           onClick={() => setCurrentView("snackRegistration")}
         >
           お菓子を並べる
         </Button>
         <Button
           variant="outline"
-          className="w-full h-16 text-xl justify-start px-6"
+          className="w-full h-16 text-xl md:text-lg lg:text-xl justify-start px-6 md:px-4"
           onClick={() => setCurrentView("snackStock")} // 新しいビューを指定
         >
           お菓子に値段をつける
         </Button>
         <Button
           variant="outline"
-          className="w-full h-16 text-xl justify-start px-6"
+          className="w-full h-16 text-xl md:text-lg lg:text-xl justify-start px-6 md:px-4"
           onClick={() => setCurrentView("qrCodeGenerator")} // 新しいビューを設定
         >
           QRコードを生成する
         </Button>
         <Button
           variant="outline"
-          className="w-full h-16 text-xl justify-start px-6"
+          className="w-full h-16 text-xl md:text-lg lg:text-xl justify-start px-6 md:px-4"
           onClick={() => router.push("/dashboard")} // 修正: ダッシュボードに遷移
         >
           ダッシュボードを見る
         </Button>
         <Button
           variant="outline"
-          className="w-full h-16 text-xl justify-start px-6"
+          className="w-full h-16 text-xl md:text-lg lg:text-xl justify-start px-6 md:px-4"
           onClick={() => router.push("/management-selection")}
         >
           開発中
