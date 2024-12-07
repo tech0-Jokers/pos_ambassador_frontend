@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic"; // 静的生成を無効化
+
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const organization_id = searchParams.get("organization_id");
+    // URLクエリパラメータの取得
+    const organization_id = request.nextUrl.searchParams.get("organization_id");
 
     if (!organization_id) {
       return NextResponse.json(
