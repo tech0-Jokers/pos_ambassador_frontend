@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SalesExpenseCard from "@/components/chart/SalesExpenseCard";
 import BarChartComponent from "@/components/chart/BarChartComponent";
 import RankingList from "@/components/chart/RankingList";
@@ -20,11 +20,11 @@ interface Message {
 
 export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("2023年4月");
-  const [salesData, setSalesData] = useState<SalesData>({
+  const [salesData] = useState<SalesData>({
     sales: 120000,
     expense: 50000,
   });
-  const [sendData, setSendData] = useState<{ name: string; value: number }[]>([
+  const [sendData] = useState<{ name: string; value: number }[]>([
     { name: "品川本社", value: 150 },
     { name: "札幌支社", value: 200 },
     { name: "名古屋支社", value: 300 },
@@ -32,9 +32,7 @@ export default function Dashboard() {
     { name: "大阪支社", value: 250 },
     { name: "仙台支社", value: 120 },
   ]);
-  const [receiveData, setReceiveData] = useState<
-    { name: string; value: number }[]
-  >([
+  const [receiveData] = useState<{ name: string; value: number }[]>([
     { name: "品川本社", value: 130 },
     { name: "札幌支社", value: 220 },
     { name: "名古屋支社", value: 310 },
@@ -42,14 +40,12 @@ export default function Dashboard() {
     { name: "大阪支社", value: 240 },
     { name: "仙台支社", value: 180 },
   ]);
-  const [rankingData, setRankingData] = useState<
-    { name: string; value: number }[]
-  >([
+  const [rankingData] = useState<{ name: string; value: number }[]>([
     { name: "チョコレート", value: 50 },
     { name: "キャンディ", value: 40 },
     { name: "クッキー", value: 30 },
   ]);
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages] = useState<Message[]>([
     {
       date: "12/8 10:00",
       sender: "山田",
