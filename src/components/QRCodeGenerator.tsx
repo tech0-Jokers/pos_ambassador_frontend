@@ -56,7 +56,7 @@ export default function QRCodeGenerator({
       const { token } = await tokenResponse.json();
 
       // QRコードデータ生成
-      const qrData = `https://tech0-gen-7-step4-studentwebapp-pos-37-bxbfgkg5a7gwa7e9.eastus-01.azurewebsites.net?organization_id=${organization_id}&token=${token}`;
+      const qrData = `https://tech0-gen-7-step4-studentwebapp-pos-37-bxbfgkg5a7gwa7e9.eastus-01.azurewebsites.net?organization_id=${organization_id}&qr_generation_token=${token}`;
       const generatedQRCode = await QRCode.toDataURL(qrData);
       setQrCodeImage(generatedQRCode);
     } catch (err) {
