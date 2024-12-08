@@ -29,16 +29,6 @@ export default function QRCodeGenerator({
     setError(null);
 
     try {
-      if (organization_id === 1) {
-        throw new Error("ログインが必要です。");
-      }
-
-      if (organization_id === 404) {
-        throw new Error(
-          "組織IDが見つかりません。サポートにお問い合わせください。"
-        );
-      }
-
       // API Routeを通じてトークンを取得
       const tokenResponse = await fetch("/api/getToken", {
         method: "POST",
