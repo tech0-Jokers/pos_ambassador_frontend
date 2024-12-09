@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SalesExpenseCard from "@/components/chart/SalesExpenseCard";
@@ -22,17 +22,19 @@ interface Message {
 }
 
 export default function Dashboard() {
-  const router = useRouter();
-  const { data: session } = useSession();
+  const router = useRouter(); // ルーターを取得
+  const { data: session } = useSession(); // セッション情報を取得
 
+  // ユーザー名から user_id と organization_id を取得
   const userData = session?.user?.name ? userMap[session.user.name] : null;
-  const organization_id = session ? userData?.organization_id || 404 : 1;
+  const organization_id = userData?.organization_id || (session ? 404 : 1); // ログイン中にデータがなければ404、未ログインなら1
+  // ここで organization_id を使用（UIやロジックで利用）
+  console.log("Organization ID:", organization_id); // デバッグ用の出力
 
   const [salesData] = useState<SalesData>({
     sales: 120000,
     expense: 50000,
   });
-
   const [sendData] = useState<{ name: string; value: number }[]>([
     { name: "品川本社", value: 150 },
     { name: "札幌支社", value: 200 },
@@ -41,7 +43,6 @@ export default function Dashboard() {
     { name: "大阪支社", value: 250 },
     { name: "仙台支社", value: 120 },
   ]);
-
   const [receiveData] = useState<{ name: string; value: number }[]>([
     { name: "品川本社", value: 130 },
     { name: "札幌支社", value: 220 },
@@ -50,14 +51,12 @@ export default function Dashboard() {
     { name: "大阪支社", value: 240 },
     { name: "仙台支社", value: 180 },
   ]);
-
   const [rankingData] = useState<{ name: string; value: number }[]>([
     { name: "チョコレート", value: 50 },
     { name: "キャンディ", value: 40 },
     { name: "クッキー", value: 30 },
   ]);
-
-  const defaultMessages: Message[] = [
+  const [messages] = useState<Message[]>([
     {
       date: "12/8 10:00",
       sender: "山田",
@@ -76,45 +75,16 @@ export default function Dashboard() {
       receiver: "高橋",
       text: "おい、聞いたか？田中さん異動らしいよ。",
     },
-  ];
+  ]);
 
-  const [messages, setMessages] = useState<Message[]>(defaultMessages);
-  const [loading, setLoading] = useState<boolean>(true);
+  // 上位5件を抽出
+  const top5SendData = [...sendData]
+    .sort((a, b) => b.value - a.value) // 値で降順ソート
+    .slice(0, 5); // 上位5件のみ抽出
 
-  useEffect(() => {
-    async function fetchMessages() {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `/api/messages?organization_id=${organization_id}`
-        );
-        if (!response.ok) {
-          throw new Error("メッセージデータの取得に失敗しました");
-        }
-        const data = await response.json();
-
-        const formattedMessages = data.map((message: any) => ({
-          date: message.send_date,
-          sender: message.sender_name,
-          receiver: message.receiver_name,
-          text: message.message_content,
-        }));
-
-        setMessages(formattedMessages);
-      } catch (error) {
-        console.error("メッセージ取得エラー:", error);
-        // デフォルトのメッセージに戻す
-        setMessages(defaultMessages);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMessages();
-  }, [organization_id]);
-
-  const top5SendData = [...sendData].slice(0, 5);
-  const top5ReceiveData = [...receiveData].slice(0, 5);
+  const top5ReceiveData = [...receiveData]
+    .sort((a, b) => b.value - a.value) // 値で降順ソート
+    .slice(0, 5); // 上位5件のみ抽出
 
   return (
     <div className="container mx-auto p-4">
@@ -129,18 +99,21 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 売り上げ / 費用 */}
         <SalesExpenseCard sales={salesData.sales} expense={salesData.expense} />
+
+        {/* メッセージ送信数・受信数（上位5件） */}
         <BarChartComponent title="メッセージ送信数(top5)" data={top5SendData} />
         <BarChartComponent
           title="メッセージ受信数(top5)"
           data={top5ReceiveData}
         />
+
+        {/* お菓子購入数ランキング */}
         <RankingList data={rankingData} title="お菓子購入数ランキング" />
-        {loading ? (
-          <p className="text-center">メッセージを読み込み中...</p>
-        ) : (
-          <MessageList data={messages} className="col-span-2" />
-        )}
+
+        {/* 新着メッセージ */}
+        <MessageList data={messages} className="col-span-2" />
       </div>
     </div>
   );
