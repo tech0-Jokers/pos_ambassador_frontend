@@ -15,10 +15,10 @@ interface SalesData {
 }
 
 interface Message {
-  date: string;
-  sender: string;
-  receiver: string;
-  text: string;
+  send_date: string;
+  sender_name: string;
+  receiver_name: string;
+  message_content: string;
 }
 
 export default function Dashboard() {
@@ -59,22 +59,22 @@ export default function Dashboard() {
 
   const defaultMessages: Message[] = [
     {
-      date: "12/8 10:00",
-      sender: "山田",
-      receiver: "佐藤",
-      text: "いつも本当に助かっています。ありがとう！",
+      send_date: "12/8 10:00",
+      sender_name: "山田",
+      receiver_name: "佐藤",
+      message_content: "いつも本当に助かっています。ありがとう！",
     },
     {
-      date: "12/8 09:50",
-      sender: "田中",
-      receiver: "鈴木",
-      text: "お菓子がめっちゃ美味しくて家族の分も買っちゃいました♡",
+      send_date: "12/8 09:50",
+      sender_name: "田中",
+      receiver_name: "鈴木",
+      message_content: "お菓子がめっちゃ美味しくて家族の分も買っちゃいました♡",
     },
     {
-      date: "12/8 09:00",
-      sender: "佐藤",
-      receiver: "高橋",
-      text: "おい、聞いたか？田中さん異動らしいよ。",
+      send_date: "12/8 09:00",
+      sender_name: "佐藤",
+      receiver_name: "高橋",
+      message_content: "おい、聞いたか？田中さん異動らしいよ。",
     },
   ];
 
@@ -91,19 +91,11 @@ export default function Dashboard() {
         if (!response.ok) {
           throw new Error("メッセージデータの取得に失敗しました");
         }
-        const data = await response.json();
+        const data: Message[] = await response.json();
 
-        const formattedMessages = data.map((message: any) => ({
-          date: message.send_date,
-          sender: message.sender_name,
-          receiver: message.receiver_name,
-          text: message.message_content,
-        }));
-
-        setMessages(formattedMessages);
+        setMessages(data);
       } catch (error) {
         console.error("メッセージ取得エラー:", error);
-        // デフォルトのメッセージに戻す
         setMessages(defaultMessages);
       } finally {
         setLoading(false);
@@ -111,6 +103,7 @@ export default function Dashboard() {
     }
 
     fetchMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization_id]);
 
   const top5SendData = [...sendData].slice(0, 5);
@@ -139,7 +132,15 @@ export default function Dashboard() {
         {loading ? (
           <p className="text-center">メッセージを読み込み中...</p>
         ) : (
-          <MessageList data={messages} className="col-span-2" />
+          <MessageList
+            data={messages.map((message) => ({
+              date: message.send_date,
+              sender: message.sender_name,
+              receiver: message.receiver_name,
+              text: message.message_content,
+            }))}
+            className="col-span-2"
+          />
         )}
       </div>
     </div>
