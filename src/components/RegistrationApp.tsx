@@ -49,7 +49,7 @@ export default function RegistrationApp() {
 
   const [currentView, setCurrentView] = useState("main");
   const [step, setStep] = useState(0);
-  const [purchase_amount, setPurchaseAmount] = useState<number>(0);
+  const [purchase_amount, setPurchaseAmount] = useState<number>(1000);
   const [incoming_quantity, setIncomingQuantity] = useState<number>(0);
   const [subView, setSubView] = useState<
     "none" | "dbSnackRegistration" | "newSnackRegistration"
@@ -153,7 +153,7 @@ export default function RegistrationApp() {
   const renderMainView = () => (
     <Card className="w-full max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg transparent-container">
       <CardHeader>
-        <CardTitle className="text-xl md:text-xl lg:text-3xl">
+        <CardTitle className="text-xl md:text-xl lg:text-2xl">
           やあ、アンバサダー！今回は何する？
         </CardTitle>
       </CardHeader>
