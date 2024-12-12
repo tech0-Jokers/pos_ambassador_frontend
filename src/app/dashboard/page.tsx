@@ -33,29 +33,27 @@ export default function Dashboard() {
     expense: 50000,
   });
 
-  const [sendData] = useState<{ name: string; value: number }[]>([
-    { name: "品川本社", value: 150 },
-    { name: "札幌支社", value: 200 },
-    { name: "名古屋支社", value: 300 },
-    { name: "福岡支社", value: 180 },
-    { name: "大阪支社", value: 250 },
-    { name: "仙台支社", value: 120 },
-  ]);
+  const defaultSendData = [
+    { name: "佐藤", value: 150 },
+    { name: "田中", value: 100 },
+    { name: "ジョーカー", value: 90 },
+    { name: "山田", value: 80 },
+    { name: "中山", value: 50 },
+  ];
 
-  const [receiveData] = useState<{ name: string; value: number }[]>([
-    { name: "品川本社", value: 130 },
-    { name: "札幌支社", value: 220 },
-    { name: "名古屋支社", value: 310 },
-    { name: "福岡支社", value: 200 },
-    { name: "大阪支社", value: 240 },
-    { name: "仙台支社", value: 180 },
-  ]);
+  const defaultReceiveData = [
+    { name: "ジョーカー", value: 180 },
+    { name: "太田", value: 140 },
+    { name: "田中", value: 120 },
+    { name: "鈴木", value: 100 },
+    { name: "高橋", value: 60 },
+  ];
 
-  const [rankingData] = useState<{ name: string; value: number }[]>([
-    { name: "チョコレート", value: 50 },
-    { name: "キャンディ", value: 40 },
-    { name: "クッキー", value: 30 },
-  ]);
+  const defaultRankingData = [
+    { name: "おっかねえおかし", value: 50 },
+    { name: "こちょこちょチョコ", value: 40 },
+    { name: "あぶないクッキー", value: 30 },
+  ];
 
   const defaultMessages: Message[] = [
     {
@@ -78,32 +76,43 @@ export default function Dashboard() {
     },
   ];
 
+  const [sendData, setSendData] = useState(defaultSendData);
+  const [receiveData, setReceiveData] = useState(defaultReceiveData);
+  const [rankingData, setRankingData] = useState(defaultRankingData);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    async function fetchMessages() {
+    async function fetchDashboardData() {
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/messages?organization_id=${organization_id}`
+          `/api/dashboard?organization_id=${organization_id}`
         );
         if (!response.ok) {
-          throw new Error("メッセージデータの取得に失敗しました");
+          throw new Error("ダッシュボードデータの取得に失敗しました");
         }
-        const data: Message[] = await response.json();
+        const data = await response.json();
 
-        setMessages(data);
+        setSendData(data.messageSendData || defaultSendData);
+        setReceiveData(data.messageReceiveData || defaultReceiveData);
+        setRankingData(data.snackRankingData || defaultRankingData);
+        setMessages(data.messages || defaultMessages);
+        setError(false);
       } catch (error) {
-        console.error("メッセージ取得エラー:", error);
+        console.error("ダッシュボードデータ取得エラー:", error);
+        setError(true);
+        setSendData(defaultSendData);
+        setReceiveData(defaultReceiveData);
+        setRankingData(defaultRankingData);
         setMessages(defaultMessages);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchMessages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchDashboardData();
   }, [organization_id]);
 
   const top5SendData = [...sendData].slice(0, 5);
@@ -129,8 +138,9 @@ export default function Dashboard() {
           data={top5ReceiveData}
         />
         <RankingList data={rankingData} title="お菓子購入数ランキング" />
+
         {loading ? (
-          <p className="text-center">メッセージを読み込み中...</p>
+          <p className="text-center">データを読み込み中...</p>
         ) : (
           <MessageList
             data={messages.map((message) => ({
