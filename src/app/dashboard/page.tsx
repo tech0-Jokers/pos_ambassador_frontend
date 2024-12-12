@@ -85,27 +85,42 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchDashboardData() {
       setLoading(true);
+
       try {
-        const response = await fetch(
+        console.log("Fetching data...");
+
+        // ダッシュボードAPIのデータ取得
+        const dashboardResponse = await fetch(
           `/api/dashboard?organization_id=${organization_id}`
         );
-        if (!response.ok) {
-          throw new Error("ダッシュボードデータの取得に失敗しました");
+        if (dashboardResponse.ok) {
+          const dashboardData = await dashboardResponse.json();
+          console.log("Dashboard API Response:", dashboardData);
+          setSendData(dashboardData.messageSendData || defaultSendData);
+          setReceiveData(
+            dashboardData.messageReceiveData || defaultReceiveData
+          );
+          setRankingData(dashboardData.snackRankingData || defaultRankingData);
+        } else {
+          console.error("Dashboard API Error:", await dashboardResponse.text());
         }
-        const data = await response.json();
 
-        setSendData(data.messageSendData || defaultSendData);
-        setReceiveData(data.messageReceiveData || defaultReceiveData);
-        setRankingData(data.snackRankingData || defaultRankingData);
-        setMessages(data.messages || defaultMessages);
+        // メッセージAPIのデータ取得
+        const messagesResponse = await fetch(
+          `/api/messages?organization_id=${organization_id}`
+        );
+        if (messagesResponse.ok) {
+          const messagesData = await messagesResponse.json();
+          console.log("Messages API Response:", messagesData);
+          setMessages(messagesData || defaultMessages);
+        } else {
+          console.error("Messages API Error:", await messagesResponse.text());
+        }
       } catch (error) {
-        console.error("ダッシュボードデータ取得エラー:", error);
-        setSendData(defaultSendData);
-        setReceiveData(defaultReceiveData);
-        setRankingData(defaultRankingData);
-        setMessages(defaultMessages);
+        console.error("データ取得エラー:", error);
       } finally {
         setLoading(false);
+        console.log("Fetch complete.");
       }
     }
 
@@ -139,15 +154,28 @@ export default function Dashboard() {
         {loading ? (
           <p className="text-center">データを読み込み中...</p>
         ) : (
-          <MessageList
-            data={messages.map((message) => ({
-              date: message.send_date,
-              sender: message.sender_name,
-              receiver: message.receiver_name,
-              text: message.message_content,
-            }))}
-            className="col-span-2"
-          />
+          // ログをここに追加
+          <>
+            {console.log("Messages being passed to MessageList:", messages)}
+            {console.log(
+              "Mapped Messages:",
+              messages.map((message) => ({
+                date: message.send_date,
+                sender: message.sender_name,
+                receiver: message.receiver_name,
+                text: message.message_content,
+              }))
+            )}
+            <MessageList
+              data={messages.map((message) => ({
+                date: message.send_date,
+                sender: message.sender_name,
+                receiver: message.receiver_name,
+                text: message.message_content,
+              }))}
+              className="col-span-2"
+            />
+          </>
         )}
       </div>
     </div>
