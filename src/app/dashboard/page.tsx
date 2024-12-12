@@ -81,7 +81,6 @@ export default function Dashboard() {
   const [rankingData, setRankingData] = useState(defaultRankingData);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -99,10 +98,8 @@ export default function Dashboard() {
         setReceiveData(data.messageReceiveData || defaultReceiveData);
         setRankingData(data.snackRankingData || defaultRankingData);
         setMessages(data.messages || defaultMessages);
-        setError(false);
       } catch (error) {
         console.error("ダッシュボードデータ取得エラー:", error);
-        setError(true);
         setSendData(defaultSendData);
         setReceiveData(defaultReceiveData);
         setRankingData(defaultRankingData);
