@@ -185,7 +185,10 @@ export default function Dashboard() {
           title="メッセージ受信数(top5)"
           data={top5ReceiveData}
         />
-        <RankingList data={rankingData} title="お菓子購入数ランキング" />
+        <RankingList
+          data={rankingData} // そのまま渡す
+          title="お菓子購入数ランキング"
+        />
 
         {loading ? (
           <p className="text-center">データを読み込み中...</p>
