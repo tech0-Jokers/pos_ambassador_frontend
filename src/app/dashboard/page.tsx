@@ -21,6 +21,12 @@ interface Message {
   message_content: string;
 }
 
+interface MessageCountData {
+  sender_name: string; // 送信者名
+  receiver_name: string; // 受信者名
+  message_count: number; // メッセージ数
+}
+
 export default function Dashboard() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -76,8 +82,8 @@ export default function Dashboard() {
     },
   ];
 
-  const [sendData, setSendData] = useState(defaultSendData);
-  const [receiveData, setReceiveData] = useState(defaultReceiveData);
+  const [sendData, setSendData] = useState<MessageCountData[]>([]);
+  const [receiveData, setReceiveData] = useState<MessageCountData[]>([]);
   const [rankingData, setRankingData] = useState(defaultRankingData);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [loading, setLoading] = useState<boolean>(true);
@@ -127,8 +133,33 @@ export default function Dashboard() {
     fetchDashboardData();
   }, [organization_id]);
 
-  const top5SendData = [...sendData].slice(0, 5);
-  const top5ReceiveData = [...receiveData].slice(0, 5);
+  // マッピングしてトップ5を抽出
+  const top5SendData = [...sendData]
+    .map((item) => ({
+      name: item.sender_name,
+      value: item.message_count,
+    }))
+    .slice(0, 5);
+
+  const top5ReceiveData = [...receiveData]
+    .map((item) => ({
+      name: item.receiver_name,
+      value: item.message_count,
+    }))
+    .slice(0, 5);
+
+  console.log("Messages being passed to MessageList:", messages);
+  console.log(
+    "Mapped Messages:",
+    messages.map((message) => ({
+      date: message.send_date,
+      sender: message.sender_name,
+      receiver: message.receiver_name,
+      text: message.message_content,
+    }))
+  );
+  console.log("Top 5 Send Data:", top5SendData);
+  console.log("Top 5 Receive Data:", top5ReceiveData);
 
   return (
     <div className="container mx-auto p-4">
@@ -156,16 +187,6 @@ export default function Dashboard() {
         ) : (
           // ログをここに追加
           <>
-            {console.log("Messages being passed to MessageList:", messages)}
-            {console.log(
-              "Mapped Messages:",
-              messages.map((message) => ({
-                date: message.send_date,
-                sender: message.sender_name,
-                receiver: message.receiver_name,
-                text: message.message_content,
-              }))
-            )}
             <MessageList
               data={messages.map((message) => ({
                 date: message.send_date,
