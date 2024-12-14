@@ -186,7 +186,10 @@ export default function Dashboard() {
           data={top5ReceiveData}
         />
         <RankingList
-          data={rankingData} // そのまま渡す
+          data={rankingData.map((item) => ({
+            product_name: item.product_name, // item.name を削除
+            purchase_count: item.purchase_count, // item.value を削除
+          }))}
           title="お菓子購入数ランキング"
         />
 
