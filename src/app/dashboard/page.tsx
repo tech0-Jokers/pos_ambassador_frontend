@@ -56,9 +56,9 @@ export default function Dashboard() {
   ];
 
   const defaultRankingData = [
-    { name: "おっかねえおかし", value: 50 },
-    { name: "こちょこちょチョコ", value: 40 },
-    { name: "あぶないクッキー", value: 30 },
+    { product_name: "おっかねえおかし", purchase_count: 50 },
+    { product_name: "こちょこちょチョコ", purchase_count: 40 },
+    { product_name: "あぶないクッキー", purchase_count: 30 },
   ];
 
   const defaultMessages: Message[] = [
@@ -160,6 +160,11 @@ export default function Dashboard() {
   );
   console.log("Top 5 Send Data:", top5SendData);
   console.log("Top 5 Receive Data:", top5ReceiveData);
+  console.log("Ranking Data being passed to RankingList:", rankingData);
+  console.log("Default Send Data:", defaultSendData);
+  console.log("Default Receive Data:", defaultReceiveData);
+  console.log("Default Ranking Data:", defaultRankingData);
+  console.log("Default Messages:", defaultMessages);
 
   return (
     <div className="container mx-auto p-4">

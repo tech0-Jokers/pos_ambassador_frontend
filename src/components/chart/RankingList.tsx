@@ -1,10 +1,10 @@
 interface RankingListProps {
-  data: { name: string; value: number }[];
-  title: string; // タイトルを追加
+  data: { product_name: string; purchase_count: number }[];
+  title: string; // タイトル
 }
 
 const RankingList: React.FC<RankingListProps> = ({ data, title }) => {
-  const medals = ["🥇", "🥈", "🥉"];
+  const medals = ["🥇", "🥈", "🥉"]; // メダルのアイコン
   return (
     <div className="p-4 bg-white shadow rounded-md">
       <h2 className="text-lg font-bold text-center mb-4">{title}</h2>
@@ -12,9 +12,9 @@ const RankingList: React.FC<RankingListProps> = ({ data, title }) => {
         {data.slice(0, 3).map((item, index) => (
           <li key={index} className="flex items-center justify-between">
             <span className="text-xl">
-              {medals[index]} {item.name}
+              {medals[index]} {item.product_name}
             </span>
-            <span>{item.value} 個</span>
+            <span>{item.purchase_count} 個</span>
           </li>
         ))}
       </ul>
