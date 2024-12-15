@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
       {
         method: "GET",
         headers: {
-          "Cache-Control": "no-cache", // キャッシュを無効化
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0", // キャッシュを無効化
         },
       }
     );
@@ -36,7 +38,9 @@ export async function GET(request: NextRequest) {
       {
         method: "GET",
         headers: {
-          "Cache-Control": "no-cache", // キャッシュを無効化
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0", // キャッシュを無効化
         },
       }
     );
@@ -50,7 +54,9 @@ export async function GET(request: NextRequest) {
       {
         method: "GET",
         headers: {
-          "Cache-Control": "no-cache", // キャッシュを無効化
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0", // キャッシュを無効化
         },
       }
     );

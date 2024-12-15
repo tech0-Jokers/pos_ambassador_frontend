@@ -102,6 +102,8 @@ export default function Dashboard() {
             method: "GET",
             headers: {
               "Cache-Control": "no-cache",
+              Pragma: "no-cache",
+              Expires: "0",
             },
           }
         );
@@ -124,6 +126,8 @@ export default function Dashboard() {
             method: "GET",
             headers: {
               "Cache-Control": "no-cache",
+              Pragma: "no-cache",
+              Expires: "0",
             },
           }
         );
