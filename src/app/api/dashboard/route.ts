@@ -18,7 +18,13 @@ export async function GET(request: NextRequest) {
 
     // 1. メッセージ送信数データを取得
     const sendResponse = await fetch(
-      `${baseUrl}/api/messages/send?organization_id=${organization_id}`
+      `${baseUrl}/api/messages/send?organization_id=${organization_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache", // キャッシュを無効化
+        },
+      }
     );
     if (!sendResponse.ok)
       throw new Error("メッセージ送信数データの取得に失敗しました");
@@ -26,7 +32,13 @@ export async function GET(request: NextRequest) {
 
     // 2. メッセージ受信数データを取得
     const receiveResponse = await fetch(
-      `${baseUrl}/api/messages/receive?organization_id=${organization_id}`
+      `${baseUrl}/api/messages/receive?organization_id=${organization_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache", // キャッシュを無効化
+        },
+      }
     );
     if (!receiveResponse.ok)
       throw new Error("メッセージ受信数データの取得に失敗しました");
@@ -34,7 +46,13 @@ export async function GET(request: NextRequest) {
 
     // 3. お菓子購入数ランキングデータを取得
     const rankingResponse = await fetch(
-      `${baseUrl}/api/snacks/ranking?organization_id=${organization_id}`
+      `${baseUrl}/api/snacks/ranking?organization_id=${organization_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache", // キャッシュを無効化
+        },
+      }
     );
     if (!rankingResponse.ok)
       throw new Error("お菓子購入数データの取得に失敗しました");

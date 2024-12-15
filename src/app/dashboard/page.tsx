@@ -97,7 +97,13 @@ export default function Dashboard() {
 
         // ダッシュボードAPIのデータ取得
         const dashboardResponse = await fetch(
-          `/api/dashboard?organization_id=${organization_id}`
+          `/api/dashboard?organization_id=${organization_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          }
         );
         if (dashboardResponse.ok) {
           const dashboardData = await dashboardResponse.json();
@@ -113,7 +119,13 @@ export default function Dashboard() {
 
         // メッセージAPIのデータ取得
         const messagesResponse = await fetch(
-          `/api/messages?organization_id=${organization_id}`
+          `/api/messages?organization_id=${organization_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          }
         );
         if (messagesResponse.ok) {
           const messagesData = await messagesResponse.json();

@@ -16,7 +16,13 @@ export async function GET(request: NextRequest) {
 
     // FastAPIにリクエストを送信
     const apiResponse = await fetch(
-      `${process.env.API_BASE_URL}/api/messages/?organization_id=${organization_id}`
+      `${process.env.API_BASE_URL}/api/messages/?organization_id=${organization_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache", // キャッシュを無効化
+        },
+      }
     );
 
     if (!apiResponse.ok) {
