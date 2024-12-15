@@ -83,7 +83,13 @@ export default function DbSnackRegistration({
       const organization_id = session ? userData?.organization_id || 404 : 1;
       try {
         const response = await fetch(
-          `/api/snacks?organization_id=${organization_id}`
+          `/api/snacks?organization_id=${organization_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Cache-Control": "no-cache", // キャッシュを無効化
+            },
+          }
         );
 
         if (!response.ok) {

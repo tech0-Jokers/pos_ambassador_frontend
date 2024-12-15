@@ -14,21 +14,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // FastAPIにリクエストを送信
+    // FastAPIにリクエストを送信 (Cache-Control: no-cacheを追加)
     const apiResponse = await fetch(
-      `${process.env.API_BASE_URL}/api/snacks/?organization_id=${organization_id}`
+      `${process.env.API_BASE_URL}/api/snacks/?organization_id=${organization_id}`,
+      {
+        method: "GET", // GETリクエストを明示
+        headers: {
+          "Cache-Control": "no-cache", // キャッシュコントロール設定
+        },
+      }
     );
 
+    // レスポンスが正常でない場合はエラーをスロー
     if (!apiResponse.ok) {
       const errorData = await apiResponse.json();
       throw new Error(errorData.message || "お菓子データの取得に失敗しました");
     }
 
+    // レスポンスデータをJSONとして取得
     const data = await apiResponse.json();
+
+    // 取得したデータを返す
     return NextResponse.json(data);
   } catch (error: unknown) {
     console.error("エラー:", error);
 
+    // エラーメッセージを整形して返す
     const errorMessage =
       error instanceof Error ? error.message : "不明なエラーが発生しました";
 
