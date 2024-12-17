@@ -8,6 +8,7 @@ import BarChartComponent from "@/components/chart/BarChartComponent";
 import RankingList from "@/components/chart/RankingList";
 import MessageList from "@/components/chart/MessageList";
 import { userMap } from "@/utils/userMap";
+import WordClouds from "@/components/WordClouds"; // WordCloudsをインポート
 
 interface SalesData {
   sales: number;
@@ -86,6 +87,7 @@ export default function Dashboard() {
   const [receiveData, setReceiveData] = useState<MessageCountData[]>([]);
   const [rankingData, setRankingData] = useState(defaultRankingData);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
+  const [wordCloudData, setWordCloudData] = useState<Record<string, string>>({});//板谷追加
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function Dashboard() {
             dashboardData.messageReceiveData || defaultReceiveData
           );
           setRankingData(dashboardData.snackRankingData || defaultRankingData);
+          setWordCloudData(dashboardData.wordCloudData?.wordclouds || {}); // WordCloudデータを設定
         } else {
           console.error("Dashboard API Error:", await dashboardResponse.text());
         }
@@ -224,7 +227,14 @@ export default function Dashboard() {
               className="col-span-2"
             />
           </>
+
         )}
+
+        {/* WordClouds コンポーネント */}
+        <div className="lg:col-span-3 md:col-span-2 col-span-1">
+          <WordClouds wordCloudData={wordCloudData} />
+        </div>
+
       </div>
     </div>
   );
