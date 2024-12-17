@@ -19,8 +19,11 @@ export async function GET(request: NextRequest) {
       `${process.env.API_BASE_URL}/api/snacks/?organization_id=${organization_id}`,
       {
         method: "GET", // GETリクエストを明示
+        cache: "no-store", // クライアント側でキャッシュを完全に無効化
         headers: {
-          "Cache-Control": "no-cache", // キャッシュコントロール設定
+          "Cache-Control": "no-store", // 中間キャッシュやブラウザキャッシュを無効化
+          Pragma: "no-cache", // HTTP/1.0 互換性のため追加
+          Expires: "0", // キャッシュの期限を即座に切らせる
         },
       }
     );
