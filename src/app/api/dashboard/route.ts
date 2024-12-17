@@ -21,10 +21,11 @@ export async function GET(request: NextRequest) {
       `${baseUrl}/api/messages/send?organization_id=${organization_id}`,
       {
         method: "GET",
+        cache: "no-store", // キャッシュを完全に無効化
         headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Expires: "0", // キャッシュを無効化
+          "Cache-Control": "no-store", // クライアント側でのキャッシュ無効化
+          Pragma: "no-cache", // 互換性のための設定
+          Expires: "0", // キャッシュの期限切れを即座に設定
         },
       }
     );
@@ -37,10 +38,11 @@ export async function GET(request: NextRequest) {
       `${baseUrl}/api/messages/receive?organization_id=${organization_id}`,
       {
         method: "GET",
+        cache: "no-store", // キャッシュを完全に無効化
         headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Expires: "0", // キャッシュを無効化
+          "Cache-Control": "no-store", // クライアント側でのキャッシュ無効化
+          Pragma: "no-cache", // 互換性のための設定
+          Expires: "0", // キャッシュの期限切れを即座に設定
         },
       }
     );
@@ -53,10 +55,11 @@ export async function GET(request: NextRequest) {
       `${baseUrl}/api/snacks/ranking?organization_id=${organization_id}`,
       {
         method: "GET",
+        cache: "no-store", // キャッシュを完全に無効化
         headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Expires: "0", // キャッシュを無効化
+          "Cache-Control": "no-store", // クライアント側でのキャッシュ無効化
+          Pragma: "no-cache", // 互換性のための設定
+          Expires: "0", // キャッシュの期限切れを即座に設定
         },
       }
     );

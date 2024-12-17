@@ -87,7 +87,9 @@ export default function Dashboard() {
   const [receiveData, setReceiveData] = useState<MessageCountData[]>([]);
   const [rankingData, setRankingData] = useState(defaultRankingData);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
-  const [wordCloudData, setWordCloudData] = useState<Record<string, string>>({});//板谷追加
+  const [wordCloudData, setWordCloudData] = useState<Record<string, string>>(
+    {}
+  ); //板谷追加
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -102,10 +104,11 @@ export default function Dashboard() {
           `/api/dashboard?organization_id=${organization_id}`,
           {
             method: "GET",
+            cache: "no-store", // キャッシュを完全に無効化
             headers: {
-              "Cache-Control": "no-cache",
-              Pragma: "no-cache",
-              Expires: "0",
+              "Cache-Control": "no-store", // クライアント側でのキャッシュ無効化
+              Pragma: "no-cache", // 互換性のための設定
+              Expires: "0", // キャッシュの期限切れを即座に設定
             },
           }
         );
@@ -127,10 +130,11 @@ export default function Dashboard() {
           `/api/messages?organization_id=${organization_id}`,
           {
             method: "GET",
+            cache: "no-store", // キャッシュを完全に無効化
             headers: {
-              "Cache-Control": "no-cache",
-              Pragma: "no-cache",
-              Expires: "0",
+              "Cache-Control": "no-store", // クライアント側でのキャッシュ無効化
+              Pragma: "no-cache", // 互換性のための設定
+              Expires: "0", // キャッシュの期限切れを即座に設定
             },
           }
         );
@@ -227,14 +231,12 @@ export default function Dashboard() {
               className="col-span-2"
             />
           </>
-
         )}
 
         {/* WordClouds コンポーネント */}
         <div className="lg:col-span-3 md:col-span-2 col-span-1">
           <WordClouds wordCloudData={wordCloudData} />
         </div>
-
       </div>
     </div>
   );
