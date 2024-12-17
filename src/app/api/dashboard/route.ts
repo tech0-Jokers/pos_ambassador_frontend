@@ -64,11 +64,21 @@ export async function GET(request: NextRequest) {
       throw new Error("お菓子購入数データの取得に失敗しました");
     const rankingData = await rankingResponse.json();
 
+    // 4. 商品ワードクラウドデータを取得（新しい処理）
+    const wordCloudResponse = await fetch(
+      `${baseUrl}/api/snacks/wordcloud/images?organization_id=${organization_id}`,
+      { method: "GET", headers: { "Cache-Control": "no-cache" } }
+    );
+    if (!wordCloudResponse.ok)
+      throw new Error("商品ワードクラウドデータの取得に失敗しました");
+    const wordCloudData = await wordCloudResponse.json();
+
     // 結果をまとめて返す
     return NextResponse.json({
       messageSendData: sendData,
       messageReceiveData: receiveData,
       snackRankingData: rankingData,
+      wordCloudData: wordCloudData, // 新しいデータを追加
     });
   } catch (error: unknown) {
     console.error("エラー:", error);
