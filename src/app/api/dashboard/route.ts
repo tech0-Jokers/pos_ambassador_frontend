@@ -70,7 +70,15 @@ export async function GET(request: NextRequest) {
     // 4. 商品ワードクラウドデータを取得（新しい処理）
     const wordCloudResponse = await fetch(
       `${baseUrl}/api/snacks/wordcloud/images?organization_id=${organization_id}`,
-      { method: "GET", headers: { "Cache-Control": "no-cache" } }
+      {
+        method: "GET",
+        cache: "no-store", // クライアント側でキャッシュ無効化
+        headers: {
+          "Cache-Control": "no-store", // 中間キャッシュやブラウザキャッシュを無効化
+          Pragma: "no-cache", // HTTP/1.0との互換性
+          Expires: "0", // キャッシュの期限を即座に切れさせる
+        },
+      }
     );
     if (!wordCloudResponse.ok)
       throw new Error("商品ワードクラウドデータの取得に失敗しました");
